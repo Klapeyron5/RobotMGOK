@@ -1,5 +1,6 @@
 package space.klapeyron.robotmgok;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,9 +12,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
@@ -79,6 +83,25 @@ public class MainActivity extends Activity {
     public EditText editTextStartY;
     public EditText editTextDirection;
 
+    //***BLE***
+    ArrayList<String> beacons = new ArrayList<String>();
+    ArrayAdapter<String> adapter;
+
+    private Handler scanHandler = new Handler();
+    private int scan_interval_ms = 500;
+    private boolean isScanning = false;
+
+    //Данные выборки для сглаживания значений мощности сигнала и расстояния
+    int[][] rssiData = new int[10][2];
+    double[][] distanceData = new double[10][2];
+    double d = 0;
+    int f = 0; // флажок
+
+    //Доступные маячки
+    ArrayList<String> MAC = new ArrayList<>();
+    ArrayList<Double> distance = new ArrayList<>();
+    //***BLE***(end)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +116,10 @@ public class MainActivity extends Activity {
         pairedDevices = bluetoothAdapter.getBondedDevices(); //получаем список сопряженных устройств
         AcceptIncomingConnection acceptIncomingConnection = new AcceptIncomingConnection();
         acceptIncomingConnection.start(); //запускаем серверную прослушку входящих БТ запросов
+
+        //***BLE***
+        scanHandler.post(scanRunnable);
+        //***BLE***(end)
 
         robotWrap = new RobotWrap(this);
         taskHandler = new TaskHandler(link);
@@ -112,6 +139,122 @@ public class MainActivity extends Activity {
             //TODO device does not support BT
         }
     }
+
+    //***BLE***
+    private Runnable scanRunnable = new Runnable()
+    {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+        @Override
+        public void run() {
+            if (isScanning)
+            {
+                if (bluetoothAdapter != null)
+                {
+                    bluetoothAdapter.stopLeScan(leScanCallback);
+                }
+            }
+            else
+            {
+                if (bluetoothAdapter != null)
+                {
+                    bluetoothAdapter.startLeScan(leScanCallback);
+                }
+            }
+
+            isScanning = !isScanning;
+
+            scanHandler.postDelayed(this, scan_interval_ms);
+        }
+    };
+
+    public BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback()
+    {
+        @Override
+        public void onLeScan(final BluetoothDevice device, final int rssi, final byte[] scanRecord)
+        {
+            int startByte = 2;
+            boolean patternFound = false;
+            while (startByte <= 5)
+            {
+                if (    ((int) scanRecord[startByte + 2] & 0xff) == 0x02 &&
+                        ((int) scanRecord[startByte + 3] & 0xff) == 0x15)
+                {
+                    patternFound = true;
+                    break;
+                }
+                startByte++;
+            }
+
+            if (patternFound)
+            {
+                byte[] uuidBytes = new byte[16];
+                System.arraycopy(scanRecord, startByte + 4, uuidBytes, 0, 16);
+
+                byte txPower = scanRecord[29];
+
+                int i = 0;
+
+                String macBuf = device.toString();
+                f = 0;
+                if (MAC.size() != 0) {
+                    for (i = 0; i < MAC.size(); i++) {
+                        if (macBuf.equals(MAC.get(i))) {
+                            optimizeRssiData(i,rssi);
+                            d = distance(Integer.parseInt(Byte.toString(txPower)) - rssiData[i][0]);
+                            optimizeDistanceData(i);
+                            distanceData[i][0] = Math.round(distanceData[i][0]*100.00)/100.00;
+                            distance.set(i, distanceData[i][0]);
+                            f = 1;
+                        }
+                    }
+
+                    if (f == 0) {
+                        optimizeRssiData(i,rssi);
+                        d = distance(Integer.parseInt(Byte.toString(txPower)) - rssiData[i][0]);
+                        optimizeDistanceData(i);
+                        distanceData[i][0] = Math.round(distanceData[i][0]*100.00)/100.00;
+                        MAC.add(macBuf);
+                        distance.add(distanceData[i][0]);
+                    }
+                }
+                else {
+                    MAC.add(macBuf);
+                    distance.add(distanceData[0][0]);
+                }
+
+                //Запись в beacons
+                if (MAC.size() != 0) {
+                    beacons.clear();
+                    for (i = 0; i < MAC.size(); i++) {
+                        beacons.add("MAC: " + MAC.get(i) + "      distance:  " + distance.get(i).toString() + "m");
+                    }
+                }
+            }
+        }
+    };
+    double distance(int power){
+        if (power < 5) return (0.0399 * power + 0.7951);
+        else return (Math.pow(10,((power - 1.6) / 20)));
+    }
+
+    void optimizeRssiData(int i, int rssi){
+        rssiData[i][1] = rssiData[i][0];
+        rssiData[i][0] = rssi;
+
+        while ((rssiData[i][0] - rssiData[i][1]) > 2)
+            rssiData[i][0] = (rssiData[i][0] + rssiData[i][1])/2;
+    }
+
+    void optimizeDistanceData(int i){
+        distanceData[i][1] = distanceData[i][0];
+        distanceData[i][0] = d;
+
+        if (distanceData[i][0] < 0) distanceData[i][0] = 0;
+        while ((distanceData[i][0] - distanceData[i][1]) > 1.5)
+            distanceData[i][0] = (distanceData[i][0] + distanceData[i][1])/2;
+    }
+
+    //***BLE***(end)
 
     @Override
     public void onResume() {
