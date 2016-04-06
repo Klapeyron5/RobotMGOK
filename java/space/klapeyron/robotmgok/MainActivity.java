@@ -88,7 +88,7 @@ public class MainActivity extends Activity {
     ArrayAdapter<String> adapter;
 
     private Handler scanHandler = new Handler();
-    private int scan_interval_ms = 500;
+    private int scan_interval_ms = 200;
     private boolean isScanning = false;
 
     //Данные выборки для сглаживания значений мощности сигнала и расстояния
@@ -100,6 +100,31 @@ public class MainActivity extends Activity {
     //Доступные маячки
     ArrayList<String> MAC = new ArrayList<>();
     ArrayList<Double> distance = new ArrayList<>();
+
+    //мау-адреса
+    String mac[] = {
+            //Test-MACs:
+            /*"F4:B8:5E:DE:9D:0D",
+            "F4:B8:5E:DE:BA:55",
+            "F4:B8:5E:DE:D5:E7"*/
+
+            //Control MACs:
+            "F4:B8:5E:DE:CA:B4",
+            "F4:B8:5E:DE:CD:F5",
+            "F4:B8:5E:DE:CD:DD"
+            /*"F4:B8:5E:DE:9D:0D",
+            "F4:B8:5E:DE:C2:8E",
+            "F4:B8:5E:DE:BD:1C",
+            "F4:B8:5E:DE:D5:E7",
+            "F4:B8:5E:DE:BA:55",
+            "F4:B8:5E:DE:CA:B4",
+            "F4:B8:5E:DE:CD:F5",
+            "F4:B8:5E:DD:EB:77",
+            "F4:B8:5E:DE:CD:DD",
+            "F4:B8:5E:DE:D5:B5"*/};
+
+    double Distance[] = new double[3];
+    String Mac[] = new String[3];
     //***BLE***(end)
 
     @Override
@@ -192,9 +217,11 @@ public class MainActivity extends Activity {
 
                 byte txPower = scanRecord[29];
 
-                int i = 0;
+                int i,j,k = 0;
 
                 String macBuf = device.toString();
+
+                //Обновление маячков
                 f = 0;
                 if (MAC.size() != 0) {
                     for (i = 0; i < MAC.size(); i++) {
@@ -229,6 +256,30 @@ public class MainActivity extends Activity {
                         beacons.add("MAC: " + MAC.get(i) + "      distance:  " + distance.get(i).toString() + "m");
                     }
                 }
+                Log.i("MAC.size", Integer.toString(MAC.size()));
+
+                if (MAC.size() > 2) {
+                    String[] tmpMac = new String[MAC.size()];
+                    for (i = 0; i < MAC.size(); i++){
+                        tmpMac[i] = MAC.get(i);
+                    }
+                    double[] tmpDistance = new double[distance.size()];
+                    for (i = 0; i < distance.size(); i++){
+                        tmpDistance[i] = distance.get(i);
+                    }
+                    sort(tmpDistance, tmpMac);
+                    for (i = 0; i < 3; i++) {
+                        for (j = 0; j < mac.length; j++){
+                            if (tmpMac[i].equals(mac[j])){
+                                Distance[k] = tmpDistance[i];
+                                Mac[k] = tmpMac[i];
+                                k++;
+                            }
+                        }
+                    }
+                    Log.i("Distance(MA)", Double.toString(Distance[0]) + "  " + Double.toString(Distance[1]) + "  " + Double.toString(Distance[2]));
+                    Log.i("Mac(MA)", Mac[0] + "  " + Mac[1] + "  " + Mac[2]);
+                }
             }
         }
     };
@@ -252,6 +303,23 @@ public class MainActivity extends Activity {
         if (distanceData[i][0] < 0) distanceData[i][0] = 0;
         while ((distanceData[i][0] - distanceData[i][1]) > 1.5)
             distanceData[i][0] = (distanceData[i][0] + distanceData[i][1])/2;
+    }
+
+    public void sort(double[] arr, String[] str){
+        for(int i = arr.length-1 ; i > 0 ; i--){
+            for(int j = 0 ; j < i ; j++){
+                if( arr[j] > arr[j+1] ){
+
+                    double tmp = arr[j];
+                    arr[j] = arr[j+1];
+                    arr[j+1] = tmp;
+
+                    String string = str[j];
+                    str[j] = str[j+1];
+                    str[j+1] = string;
+                }
+            }
+        }
     }
 
     //***BLE***(end)
@@ -338,11 +406,14 @@ public class MainActivity extends Activity {
             }
         });
 
-        Button buttonSetStart = (Button) findViewById(R.id.buttonSetTask);
+        Button buttonSetStart = (Button) findViewById(R.id.buttonSetStart);
         buttonSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                robotWrap.setStartCoordinatesByServerEditText();
+                //robotWrap.setStartCoordinatesByServerEditText();
+                Log.i(TAG,"START_THREAD");
+                MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
+                MoveToBeacons.searchAndGo.start();
             }
         });
 
