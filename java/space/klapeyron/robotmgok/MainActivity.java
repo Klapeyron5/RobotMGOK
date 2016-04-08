@@ -10,12 +10,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,6 +62,8 @@ public class MainActivity extends Activity {
     private BluetoothSocket clientSocket; //канал соединения с последним клиентом
     private ReadIncomingMessage readIncomingMessage;
 
+    private Camera camera;
+
     ru.rbot.android.bridge.service.robotcontroll.robots.Robot robot;
     RobotWrap robotWrap;
     MainActivity link = this;
@@ -78,6 +84,7 @@ public class MainActivity extends Activity {
     public EditText editTextStartX;
     public EditText editTextStartY;
     public EditText editTextDirection;
+    private SurfaceView surfaceViewCamera;
 
     //***BLE***
     ArrayList<String> beacons = new ArrayList<String>();
@@ -323,6 +330,7 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        camera = Camera.open(0);
     }
 
     @Override
@@ -346,6 +354,7 @@ public class MainActivity extends Activity {
     }
 
     private void initConstructor() {
+    //    new IntentIntegrator(this).initiateScan();
         registerReceiver(incomingPairRequestReceiver, new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST));
 
         textViewServerState = (TextView) findViewById(R.id.textViewServerState);
@@ -354,6 +363,10 @@ public class MainActivity extends Activity {
         textViewCountedPath = (TextView) findViewById(R.id.textViewCountedPath);
         textViewOdometryPath = (TextView) findViewById(R.id.textViewOdometryPath);
         textViewOdometryAngle = (TextView) findViewById(R.id.textViewOdometryAngle);
+        surfaceViewCamera = (SurfaceView) findViewById(R.id.surfaceViewCamera);
+
+        SurfaceHolder surfaceHolder = surfaceViewCamera.getHolder();
+        surfaceHolder.addCallback(surfaceHolderCallback);
 
         editTextFinishX = (EditText) findViewById(R.id.editTextFinishX);
         editTextFinishY = (EditText) findViewById(R.id.editTextFinishY);
@@ -508,6 +521,41 @@ public class MainActivity extends Activity {
         textViewClientConnectionState.setText(state);
     }
 
+    SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            try{
+                camera.setPreviewDisplay(holder);
+                camera.setDisplayOrientation(90);
+                Camera.Size size =  camera.getParameters().getPictureSize();
+                Log.i(TAG, "Picture size: " + size.width + " " + size.height);
+                size =  camera.getParameters().getPreviewSize();
+                float aspect = (float) size.width / size.height;
+                Log.i(TAG,"Preview size: "+size.width + " " + size.height);
+                size =  camera.getParameters().getJpegThumbnailSize();
+                Log.i(TAG,"JPEG size: "+size.width + " " + size.height);
+
+                ViewGroup.LayoutParams lp = surfaceViewCamera.getLayoutParams();
+                lp.width = (int) (surfaceViewCamera.getWidth()/aspect);
+                lp.height = surfaceViewCamera.getHeight();
+                surfaceViewCamera.setLayoutParams(lp);
+
+                camera.startPreview();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+
+        }
+    };
 
     private final BroadcastReceiver incomingPairRequestReceiver = new BroadcastReceiver() {
         @Override
