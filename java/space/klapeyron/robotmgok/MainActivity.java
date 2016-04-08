@@ -410,10 +410,10 @@ public class MainActivity extends Activity {
         buttonSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //robotWrap.setStartCoordinatesByServerEditText();
-                Log.i(TAG,"START_THREAD");
-                MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
-                MoveToBeacons.searchAndGo.start();
+                robotWrap.setStartCoordinatesByServerEditText();
+        //        Log.i(TAG,"START_THREAD");
+        //        MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
+        //        MoveToBeacons.searchAndGo.start();
             }
         });
 
@@ -484,7 +484,7 @@ public class MainActivity extends Activity {
                 }
                 break;
         }
-        sendMessage("currentXY", robotWrap.currentCellX, robotWrap.currentCellY);
+        sendMessage("currentXY", robotWrap.currentCellX, robotWrap.currentCellY, robotWrap.currentDirection);
     }
 
     public void stopRiding() {
@@ -551,8 +551,8 @@ public class MainActivity extends Activity {
      *            "target": robot reached target
      * @param X current robot X coordinate
      * @param Y current robot Y coordinate*/
-    private void sendMessage(String key, int X, int Y) {
-        String str = new String("/"+key+"/"+Integer.toString(X)+"/"+Integer.toString(Y)+"/");
+    private void sendMessage(String key, int X, int Y, int dir) {
+        String str = new String("/"+key+"/"+Integer.toString(X)+"/"+Integer.toString(Y)+"/"+Integer.toString(dir)+"/");
         if (key.equals("path")) {
             for(int i = 0;i<taskHandler.absolutePath.size();i++) {
                 str = str + Integer.toString(taskHandler.absolutePath.get(i));
@@ -605,7 +605,7 @@ public class MainActivity extends Activity {
                 setClientConnectionState("Connected");
             }
         });
-        sendMessage("ready",robotWrap.currentCellX,robotWrap.currentCellY);
+        sendMessage("ready",robotWrap.currentCellX,robotWrap.currentCellY,robotWrap.currentDirection);
      //   ReadIncomingMessage readIncomingMessage = new ReadIncomingMessage();
         readIncomingMessage = new ReadIncomingMessage();
         readIncomingMessage.start();
@@ -649,7 +649,7 @@ public class MainActivity extends Activity {
                 int fY = Integer.parseInt(Y.toString());
                 try {
                     taskHandler.setTask(fX, fY);
-                    sendMessage("path",robotWrap.currentCellX,robotWrap.currentCellY);
+                    sendMessage("path",robotWrap.currentCellX,robotWrap.currentCellY,robotWrap.currentDirection);
                 } catch (ControllerException e) {
                     e.printStackTrace();
                 }
@@ -676,7 +676,7 @@ public class MainActivity extends Activity {
     }
 
     private void finishedWorkWithBtClient() {
-        sendMessage("target", 0, 0);
+        sendMessage("target", 0, 0, 0);
         //start listening new client task
         Log.i(TAG, "Close readIncomingMessage 1 "+ readIncomingMessage.getId());
         if ((readIncomingMessage != null)&&(readIncomingMessage.isAlive())) {

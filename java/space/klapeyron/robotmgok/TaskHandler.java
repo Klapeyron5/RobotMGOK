@@ -91,6 +91,8 @@ public class TaskHandler {
             for(int i=0;i<path.size();i++) {
                 switch(path.get(i)) {
                     case 0: //right turn on PI/2
+                        if (i!=0)
+                            mainActivity.TTS.turnRight();
                         turnRight();
                     //    turn(-(float)Math.PI/2);
                         //than we think, that turn was successfully ended and change current robot's direction
@@ -113,6 +115,8 @@ public class TaskHandler {
                             }
                         break;
                     case 2: //left turn on PI/2
+                        if (i!=0)
+                            mainActivity.TTS.turnLeft();
                         turnLeft();
                      //   turn((float)Math.PI/2);
                         //than we think, that turn was successfully ended and change current robot's direction
