@@ -130,10 +130,6 @@ public class RobotWrap {
                 mainActivity.textViewCountedPath.setText(Float.toString(countedPath));
                 mainActivity.textViewOdometryPath.setText(Float.toString(odometryPath));
                 mainActivity.textViewOdometryAngle.setText(Float.toString(odometryAngle));
-                mainActivity.textViewOdometryX.setText(Float.toString(odometryAbsoluteX));
-                mainActivity.textViewOdometryY.setText(Float.toString(odometryAbsoluteY));
-                mainActivity.textViewOdometrySpeedL.setText(Float.toString(odometryWheelSpeedLeft));
-                mainActivity.textViewOdometrySpeedR.setText(Float.toString(odometryWheelSpeedRight));
             }
         };
         if (robot.isControllerAvailable(BodyController.class)) {

@@ -73,10 +73,6 @@ public class MainActivity extends Activity {
     public TextView textViewCountedPath;
     public TextView textViewOdometryPath;
     public TextView textViewOdometryAngle;
-    public TextView textViewOdometryX;
-    public TextView textViewOdometryY;
-    public TextView textViewOdometrySpeedL;
-    public TextView textViewOdometrySpeedR;
     public EditText editTextFinishX;
     public EditText editTextFinishY;
     public EditText editTextStartX;
@@ -357,10 +353,6 @@ public class MainActivity extends Activity {
         textViewRobotConnectionState = (TextView) findViewById(R.id.textViewRobotConnectionState);
         textViewCountedPath = (TextView) findViewById(R.id.textViewCountedPath);
         textViewOdometryPath = (TextView) findViewById(R.id.textViewOdometryPath);
-        textViewOdometryX = (TextView) findViewById(R.id.textViewOdometryX);
-        textViewOdometryY = (TextView) findViewById(R.id.textViewOdometryY);
-        textViewOdometrySpeedL = (TextView) findViewById(R.id.textViewOdometrySpeedL);
-        textViewOdometrySpeedR = (TextView) findViewById(R.id.textViewOdometrySpeedR);
         textViewOdometryAngle = (TextView) findViewById(R.id.textViewOdometryAngle);
 
         editTextFinishX = (EditText) findViewById(R.id.editTextFinishX);
@@ -406,28 +398,21 @@ public class MainActivity extends Activity {
             }
         });
 
+        Button buttonCalibrate = (Button) findViewById(R.id.buttonCalibrate);
+        buttonCalibrate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "START_THREAD");
+                MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
+                MoveToBeacons.searchAndGo.start();
+            }
+        });
+
         Button buttonSetStart = (Button) findViewById(R.id.buttonSetStart);
         buttonSetStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 robotWrap.setStartCoordinatesByServerEditText();
-        //        Log.i(TAG,"START_THREAD");
-        //        MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
-        //        MoveToBeacons.searchAndGo.start();
-            }
-        });
-
-        Button buttonSetTask = (Button) findViewById(R.id.buttonSetTask);
-        buttonSetTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Log.i(TAG,"1");
-                    int fY = Integer.parseInt(editTextFinishY.getText().toString());
-                    int fX = Integer.parseInt(editTextFinishX.getText().toString());
-                    Log.i(TAG,"2");
-                    taskHandler.setTask(fX, fY);
-                } catch (ControllerException e) {e.printStackTrace();}
             }
         });
     }
