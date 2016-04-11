@@ -554,7 +554,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            
+
         }
 
         @Override
