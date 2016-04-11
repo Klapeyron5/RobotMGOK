@@ -330,7 +330,13 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        camera = Camera.open(0);
+        camera = Camera.open(1);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        camera.release();
     }
 
     @Override
@@ -548,7 +554,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+            
         }
 
         @Override
