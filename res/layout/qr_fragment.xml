@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#77ff0000"
+    android:layout_height="match_parent">
+    <com.journeyapps.barcodescanner.CompoundBarcodeView
+        android:id="@+id/barcode_scanner"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="100dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+    </com.journeyapps.barcodescanner.CompoundBarcodeView>
+</LinearLayout>

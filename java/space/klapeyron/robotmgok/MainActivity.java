@@ -527,7 +527,7 @@ public class MainActivity extends Activity {
         textViewClientConnectionState.setText(state);
     }
 
-    SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
+    private SurfaceHolder.Callback surfaceHolderCallback = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             try{
