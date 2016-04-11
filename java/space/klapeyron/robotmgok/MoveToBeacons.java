@@ -33,14 +33,15 @@ public class MoveToBeacons {
         public void run(){
             ride();
             updateData();
-            //Log.i("TAG", Double.toString((distance[0] + distance[1] + distance[2])/3));
-            while((distance[0] + distance[1] + distance[2])/3 > 1) {
+            Log.i("Distance", Double.toString((distance[0] + distance[1] + distance[2]) / 3));
+            while(true) {
+
                 updateData();
             if (firstDiffer[0] < 0) //приближение (приращение расстояние отрицательное)
             {
                 speedL = 10.0f;
                 speedR = 10.0f;
-                /*if ((secondDiffer > (-threashold))&&(secondDiffer < (threashold))) {
+                if ((secondDiffer > (-threashold))&&(secondDiffer < 0)) {
                     Log.i("TAG","выравнивание скоростей колес, движение вперед");
                     speedL = 10.0f;
                     speedR = 10.0f;
@@ -48,18 +49,18 @@ public class MoveToBeacons {
                 if (secondDiffer < (-threashold)) {
                     Log.i("TAG","сохранение параметров движения");
                 }
-                if (secondDiffer > threashold) {
+                if (secondDiffer > 0) {
                     Log.i("TAG","смена направления поворота");
                     tempSpeed = speedL;
                     speedL = speedR;
                     speedR = tempSpeed;
-                }*/
+                }
             }
             else {
                 if ((secondDiffer > (-threashold))&&(secondDiffer < (threashold))) {
                     Log.i("TAG", "стартовые параметры езды  ");
-                    speedL = 0.5f;
-                    speedR = 10.0f;
+                    speedL = 0.2f;
+                    speedR = 15.0f;
                 }
                 if (secondDiffer < (-threashold)) {
                     Log.i("TAG", "сохранение параметров движения");
@@ -78,8 +79,8 @@ public class MoveToBeacons {
                     e.printStackTrace();
                 }
             }
-            Log.i("TAG", "Приехали:)");
-            stopRide();
+            //Log.i("TAG", "Приехали:)");
+            //stopRide();
         }
     };
 

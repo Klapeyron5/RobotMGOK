@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
     ArrayAdapter<String> adapter;
 
     private Handler scanHandler = new Handler();
-    private int scan_interval_ms = 200;
+    private int scan_interval_ms = 400;
     private boolean isScanning = false;
 
     //Данные выборки для сглаживания значений мощности сигнала и расстояния
@@ -112,9 +112,9 @@ public class MainActivity extends Activity {
             "F4:B8:5E:DE:D5:E7"*/
 
             //Control MACs:
+            "F4:B8:5E:DE:BA:55",
             "F4:B8:5E:DE:CA:B4",
-            "F4:B8:5E:DE:CD:F5",
-            "F4:B8:5E:DE:CD:DD"
+            "F4:B8:5E:DE:CD:F5"
             /*"F4:B8:5E:DE:9D:0D",
             "F4:B8:5E:DE:C2:8E",
             "F4:B8:5E:DE:BD:1C",
