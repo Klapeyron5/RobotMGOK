@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:background="#77ff0000"
+    android:id="@+id/fragmentParentLayout"
     android:layout_height="match_parent">
     <com.journeyapps.barcodescanner.CompoundBarcodeView
         android:id="@+id/barcode_scanner"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="100dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp">
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     </com.journeyapps.barcodescanner.CompoundBarcodeView>
 </LinearLayout>

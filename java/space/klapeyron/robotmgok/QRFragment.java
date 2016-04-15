@@ -1,6 +1,8 @@
 package space.klapeyron.robotmgok;
 
 import android.app.Fragment;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +24,13 @@ public class QRFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.qr_fragment, null);
         barcodeView = (CompoundBarcodeView) v.findViewById(R.id.barcode_scanner);
+        ViewGroup.LayoutParams params = barcodeView.getLayoutParams();
+        barcodeView.setLayoutParams(params);
         barcodeView.decodeContinuous(barcodeCallback);
 
         CameraSettings settings = new CameraSettings();
         settings.setRequestedCameraId(1);
         barcodeView.getBarcodeView().setCameraSettings(settings);
-
         barcodeView.setStatusText("");
         return v;
     }
@@ -47,7 +50,9 @@ public class QRFragment extends Fragment {
     private BarcodeCallback barcodeCallback = new BarcodeCallback() {
         @Override
         public void barcodeResult(BarcodeResult result) {
-            Log.d("TAG", "Result");
+            Log.d("TAG", "Result "+result.getText());
+            final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+            tg.startTone(ToneGenerator.TONE_PROP_BEEP2);
         }
 
         @Override
