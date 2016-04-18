@@ -664,6 +664,9 @@ public class MainActivity extends Activity {
                         try {
                             os = new FileOutputStream(fileName, true);
                             data = "";
+                            X = robotWrap.currentCellX;
+                            Y = robotWrap.currentCellY;
+                        //    int dir = robotWrap.currentDirection;
                             if (measure_counter == 0) data +="Coords," + X + "," + Y + "\n";
                             for (i = 0; i < MAC.size(); i++) {
                                 data += MAC.get(i) + "," + averpower.get(i).toString() + ",";

@@ -26,22 +26,53 @@ public class BluetoothCommands {
             case "mapping measure":
                 measure();
                 break;
+            case "mapping clear file":
+                clearFile();
+                break;
         }
     }
 
     private void moveForward() {
         robotMoveControl.moveForward();
+        switch (mainActivity.robotWrap.currentDirection) {
+            case 0:
+                mainActivity.robotWrap.currentCellX++;
+                break;
+            case 1:
+                mainActivity.robotWrap.currentCellY++;
+                break;
+            case 2:
+                mainActivity.robotWrap.currentCellX--;
+                break;
+            case 3:
+                mainActivity.robotWrap.currentCellY--;
+                break;
+        }
     }
 
     private void turnLeft() {
         robotMoveControl.turnLeft();
+        if(mainActivity.robotWrap.currentDirection!=0)
+            mainActivity.robotWrap.currentDirection--;
+        else
+            mainActivity.robotWrap.currentDirection = 3;
     }
 
     private void turnRight() {
         robotMoveControl.turnRight();
+        if(mainActivity.robotWrap.currentDirection!=3)
+            mainActivity.robotWrap.currentDirection++;
+        else
+            mainActivity.robotWrap.currentDirection = 0;
     }
 
     private void measure () {
+        mainActivity.robotWrap.currentCellX = 3;
+        mainActivity.robotWrap.currentCellY = 13;
+        mainActivity.robotWrap.currentDirection = 0;
         mainActivity.startMeasure();
+    }
+
+    private void clearFile() {
     }
 }
