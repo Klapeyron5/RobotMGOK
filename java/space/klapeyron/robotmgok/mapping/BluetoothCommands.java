@@ -24,9 +24,11 @@ public class BluetoothCommands {
                 break;
             case "mapping half pi right":
                 Log.i("TAG","mapping half pi right");
+                turnRight();
                 break;
             case "mapping measure":
                 Log.i("TAG","mapping measure");
+                measure();
                 break;
         }
     }
@@ -44,4 +46,7 @@ public class BluetoothCommands {
         robotMoveControl.turnRight();
     }
 
+    private void measure () {
+
+    }
 }
