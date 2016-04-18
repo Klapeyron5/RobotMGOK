@@ -702,9 +702,28 @@ public class MainActivity extends Activity {
         measurement.start();
     }
 
-    public void counterReset(View v){
+    public void clearFile(){
         measure_counter = 0;
-        //status.setText("counter = 0");
+        File fileName = null;
+        FileOutputStream os = null;
+        if (isExternalStorageWritable()) {
+            File sdDir = android.os.Environment.getExternalStorageDirectory();
+            File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
+            dir.mkdir();
+            fileName = new File(dir, "example.txt");
+            try {
+                os = new FileOutputStream(fileName);
+                data = "";
+                os.write(data.getBytes());
+                os.close();
+                //status.setText("datafile has been cleared..");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("TAG", "Write_exception");
+            }
+        } else {
+            Log.i("TAG", "SD_not_available");
+        }
     }
 
     /*private void showAverage() {
