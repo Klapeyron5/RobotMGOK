@@ -1,7 +1,5 @@
 package space.klapeyron.robotmgok.mapping;
 
-import android.util.Log;
-
 import space.klapeyron.robotmgok.MainActivity;
 
 public class BluetoothCommands {
@@ -15,19 +13,15 @@ public class BluetoothCommands {
     public void runFromBluetoothCommands(String key) {
         switch(key) {
             case "mapping forward":
-                Log.i("TAG","mapping forward");
                 moveForward();
                 break;
             case "mapping half pi left":
-                Log.i("TAG","mapping half pi left");
                 turnLeft();
                 break;
             case "mapping half pi right":
-                Log.i("TAG","mapping half pi right");
                 turnRight();
                 break;
             case "mapping measure":
-                Log.i("TAG","mapping measure");
                 measure();
                 break;
         }
@@ -40,7 +34,6 @@ public class BluetoothCommands {
     private void turnLeft() {
         robotMoveControl.turnLeft();
     }
-
 
     private void turnRight() {
         robotMoveControl.turnRight();
