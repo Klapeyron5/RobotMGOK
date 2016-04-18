@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
-import space.klapeyron.robotmgok.mapping.MappingActivity;
+import space.klapeyron.robotmgok.mapping.RobotMoveControl;
 
 public class MainActivity extends Activity {
 
@@ -210,8 +210,24 @@ public class MainActivity extends Activity {
         buttonMapping.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MappingActivity.class);
-                startActivity(intent);
+                setContentView(R.layout.mapping);
+                final RobotMoveControl robotMoveControl = new RobotMoveControl(robotWrap);
+
+                Button buttonTurnLeft = (Button) findViewById(R.id.buttonPiLeft);
+                buttonTurnLeft.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        robotMoveControl.turnLeft();
+                    }
+                });
+
+                Button buttonMoveForward = (Button) findViewById(R.id.buttonForward);
+                buttonMoveForward.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        robotMoveControl.moveForward();
+                    }
+                });
             }
         });
 

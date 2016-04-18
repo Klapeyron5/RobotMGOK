@@ -5,13 +5,14 @@ import android.util.Log;
 import ru.rbot.android.bridge.service.robotcontroll.controllers.BodyController;
 import ru.rbot.android.bridge.service.robotcontroll.controllers.body.TwoWheelsBodyController;
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
+import space.klapeyron.robotmgok.RobotWrap;
 
 public class RobotMoveControl {
-    private RobotWrapMapping robotWrapMapping;
+    private RobotWrap robotWrap;
     private TwoWheelsBodyController wheelsController;
 
-    public RobotMoveControl(RobotWrapMapping robotWrapMapping) {
-        this.robotWrapMapping = robotWrapMapping;
+    public RobotMoveControl(RobotWrap robotWrap) {
+        this.robotWrap = robotWrap;
     }
 
     public void turnLeft() {
@@ -56,10 +57,10 @@ public class RobotMoveControl {
         @Override
         public void run() {
             //        Log.i("TAG","turn started: "+robotWrapMapping.odometryAngle+";   purpose angle: ");
-            startAngle = robotWrapMapping.odometryAngle;
-            if( robotWrapMapping.robot.isControllerAvailable( BodyController.class ) ) {
+            startAngle = robotWrap.odometryAngle;
+            if( robotWrap.robot.isControllerAvailable( BodyController.class ) ) {
                 try {
-                    BodyController bodyController = (BodyController) robotWrapMapping.robot.getController( BodyController.class );
+                    BodyController bodyController = (BodyController) robotWrap.robot.getController( BodyController.class );
                     if( bodyController.isControllerAvailable( TwoWheelsBodyController.class ) ) {
                         wheelsController = (TwoWheelsBodyController) bodyController.getController( TwoWheelsBodyController.class );
                         wheelsController.turnAround(turnSpeed, purposeAngle);
@@ -69,7 +70,7 @@ public class RobotMoveControl {
                         while(!checkWheelsSpeedThread.getRobotStopped()) {
                             if (!checkWheelsSpeedThread.isAlive())
                                 checkWheelsSpeedThread.start();
-                            speedBuffer += Math.abs(robotWrapMapping.odometryWheelSpeedLeft)+Math.abs(robotWrapMapping.odometryWheelSpeedRight);
+                            speedBuffer += Math.abs(robotWrap.odometryWheelSpeedLeft)+Math.abs(robotWrap.odometryWheelSpeedRight);
                         }
                         //       Log.i("TAG","turn ended: "+robotWrapMapping.odometryAngle+";   angle difference: "+differenceAngle());//Math.abs(robotWrapMapping.odometryAngle - startAngle));
                         Log.i("TAG", "speedBuffer " + speedBuffer);
@@ -104,10 +105,10 @@ public class RobotMoveControl {
 
         /**возвращает модуль разницы между стартовым и текущим углами (для всех случаев работает)*/
         private float differenceAngle() {
-            if (Math.abs(robotWrapMapping.odometryAngle - startAngle) < Math.PI)
-                return Math.abs(robotWrapMapping.odometryAngle - startAngle);
+            if (Math.abs(robotWrap.odometryAngle - startAngle) < Math.PI)
+                return Math.abs(robotWrap.odometryAngle - startAngle);
             else
-                return (float)Math.abs(Math.abs(robotWrapMapping.odometryAngle - startAngle)-2*Math.PI);
+                return (float)Math.abs(Math.abs(robotWrap.odometryAngle - startAngle)-2*Math.PI);
         }
     }
 
@@ -125,16 +126,16 @@ public class RobotMoveControl {
 
         @Override
         public void run() {
-            startDistance = robotWrapMapping.odometryPath;
-            if( robotWrapMapping.robot.isControllerAvailable( BodyController.class ) ) {
+            startDistance = robotWrap.odometryPath;
+            if( robotWrap.robot.isControllerAvailable( BodyController.class ) ) {
                 try {
-                    BodyController bodyController = (BodyController) robotWrapMapping.robot.getController( BodyController.class );
+                    BodyController bodyController = (BodyController) robotWrap.robot.getController( BodyController.class );
                     if( bodyController.isControllerAvailable( TwoWheelsBodyController.class ) ) {
                         wheelsController = (TwoWheelsBodyController) bodyController.getController( TwoWheelsBodyController.class );
                         CheckDistanceThread checkDistanceThread = new CheckDistanceThread();
 
-                        startAngle = robotWrapMapping.odometryAngle;
-                        startDistance = robotWrapMapping.odometryPath;
+                        startAngle = robotWrap.odometryAngle;
+                        startDistance = robotWrap.odometryPath;
                         while(!checkDistanceThread.getRobotReachedTarget()) {
                             if (!checkDistanceThread.isAlive())
                                 checkDistanceThread.start();
@@ -148,15 +149,15 @@ public class RobotMoveControl {
 
         private void correctionCode() {
             float absAngleDifference;
-            float angleDifference = startAngle - robotWrapMapping.odometryAngle;
+            float angleDifference = startAngle - robotWrap.odometryAngle;
 
             boolean piBorderFlag = false; //true, когда между текущим и стратовым углом лежит пи/-пи граница
 
-            if (Math.abs(robotWrapMapping.odometryAngle - startAngle) < Math.PI) {
-                absAngleDifference = Math.abs(robotWrapMapping.odometryAngle - startAngle);
+            if (Math.abs(robotWrap.odometryAngle - startAngle) < Math.PI) {
+                absAngleDifference = Math.abs(robotWrap.odometryAngle - startAngle);
                 piBorderFlag = false;
             } else {
-                absAngleDifference = (float) Math.abs(Math.abs(robotWrapMapping.odometryAngle - startAngle) - 2 * Math.PI);
+                absAngleDifference = (float) Math.abs(Math.abs(robotWrap.odometryAngle - startAngle) - 2 * Math.PI);
                 piBorderFlag = true;
             }
 
@@ -175,15 +176,15 @@ public class RobotMoveControl {
 
             if (absAngleDifference < rangeValidDeviation) {
                 wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                Log.i("TAG","OK  ; start angle: "+startAngle+";  angle: "+ robotWrapMapping.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+                Log.i("TAG","OK  ; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
             } else
-            if (angleDifference > 0) { //отклонение вправо, корректируем влево
-                wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                Log.i("TAG", "LEFT; start angle: " + startAngle + ";  angle: " + robotWrapMapping.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
-            } else { //отклонение влево, корректируем вправо
-                wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                Log.i("TAG","RIGH; start angle: "+startAngle+";  angle: "+ robotWrapMapping.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
-            }
+                if (angleDifference > 0) { //отклонение вправо, корректируем влево
+                    wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
+                    Log.i("TAG", "LEFT; start angle: " + startAngle + ";  angle: " + robotWrap.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+                } else { //отклонение влево, корректируем вправо
+                    wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
+                    Log.i("TAG","RIGH; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+                }
         }
 
         private class CheckDistanceThread extends Thread {
@@ -193,7 +194,7 @@ public class RobotMoveControl {
             @Override
             public void run() {
                 while(!reachedTarget) {
-                    if (robotWrapMapping.odometryPath - startDistance >= purposeDistance) {
+                    if (robotWrap.odometryPath - startDistance >= purposeDistance) {
                         reachedTarget = true;
                         Log.i("TAG","TARGET");
                     }
