@@ -25,16 +25,16 @@ public class RobotWrap {
     public int currentCellY;
 
     //counted odometry info
-    float countedPath;
+    public float countedPath;
     public int currentDirection; //0: positive direction on X; 1: positive dir on Y; 2: negative on X; 3: negative on Y;
 
     //primary odometry info
-    float odometryPath;
-    float odometryAngle;
-    float odometryAbsoluteX;
-    float odometryAbsoluteY;
-    float odometryWheelSpeedLeft;
-    float odometryWheelSpeedRight;
+    public float odometryPath;
+    public float odometryAngle;
+    public float odometryAbsoluteX;
+    public float odometryAbsoluteY;
+    public float odometryWheelSpeedLeft;
+    public float odometryWheelSpeedRight;
 
     public final RobotStateListener robotStateListener = new RobotStateListener() {
         @Override

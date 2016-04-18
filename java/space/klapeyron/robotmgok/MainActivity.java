@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
+import space.klapeyron.robotmgok.mapping.MappingActivity;
 
 public class MainActivity extends Activity {
 
@@ -205,6 +206,15 @@ public class MainActivity extends Activity {
         editTextStartY = (EditText) findViewById(R.id.editTextStartY);
         editTextDirection = (EditText) findViewById(R.id.editTextStartDirection);
 
+        Button buttonMapping = (Button) findViewById(R.id.buttonMapping);
+        buttonMapping.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MappingActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Button buttonReconnectToRobot = (Button) findViewById(R.id.buttonReconnectToRobot);
         buttonReconnectToRobot.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,8 +244,6 @@ public class MainActivity extends Activity {
         buttonCalibrate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MoveToBeacons MoveToBeacons = new MoveToBeacons(link);
-                MoveToBeacons.searchAndGo.start();
             }
         });
 
