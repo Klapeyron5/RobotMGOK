@@ -28,24 +28,38 @@ public class RobotMoveControl {
         }).start();
     }
 
-    public void moveForward() {(new Thread() {
-        @Override
-        public void run() {
-            ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
-            forwardMoveThread.start();
-            try {
-                forwardMoveThread.join();
-            } catch (InterruptedException e) {}
-        }
-    }).start();
+    public void turnRight() {
+        (new Thread() {
+            @Override
+            public void run() {
+                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float)Math.PI/2);
+                angleTurnThreadSimple.start();
+                try {
+                    angleTurnThreadSimple.join();
+                } catch (InterruptedException e) {}
+            }
+        }).start();
+    }
+
+    public void moveForward() {
+        (new Thread() {
+            @Override
+            public void run() {
+                ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
+                forwardMoveThread.start();
+                try {
+                    forwardMoveThread.join();
+                } catch (InterruptedException e) {}
+            }
+        }).start();
     }
 
     private class AngleTurnThreadSimple extends Thread {
         private float purposeAngle;
         private float startAngle;
         private float turnSpeed = 8.55f; //четыре поворота на пи/2, значение скоростей для точного 2пи поворота:
-        //8.60-сразу после прямой езды(колесико смотрит вдоль направления робота)
-        //8.68-после поворота(колесико смотрит перпендикулярно направлению робота)
+                                         //8.60-сразу после прямой езды(колесико смотрит вдоль направления робота)
+                                         //8.68-после поворота(колесико смотрит перпендикулярно направлению робота)
 
         private float speedBuffer = 0; //если не увеличивается за dt, значит скорости на колесах - 0, буфер общий, на оба колеса.
 

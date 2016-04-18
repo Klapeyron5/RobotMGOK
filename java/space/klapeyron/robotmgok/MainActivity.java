@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
-import space.klapeyron.robotmgok.mapping.RobotMoveControl;
+import space.klapeyron.robotmgok.mapping.BluetoothCommands;
 
 public class MainActivity extends Activity {
 
@@ -125,10 +125,10 @@ public class MainActivity extends Activity {
 
 
     ru.rbot.android.bridge.service.robotcontroll.robots.Robot robot;
-    RobotWrap robotWrap;
-    MainActivity link = this;
-    TaskHandler taskHandler;
-    TTSManager TTS;
+    public RobotWrap robotWrap;
+    private MainActivity link = this;
+    private TaskHandler taskHandler;
+    public TTSManager TTS;
 
     //customizing server interface
     public int screenWidth;
@@ -205,31 +205,6 @@ public class MainActivity extends Activity {
         editTextStartX = (EditText) findViewById(R.id.editTextStartX);
         editTextStartY = (EditText) findViewById(R.id.editTextStartY);
         editTextDirection = (EditText) findViewById(R.id.editTextStartDirection);
-
-        Button buttonMapping = (Button) findViewById(R.id.buttonMapping);
-        buttonMapping.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setContentView(R.layout.mapping);
-                final RobotMoveControl robotMoveControl = new RobotMoveControl(robotWrap);
-
-                Button buttonTurnLeft = (Button) findViewById(R.id.buttonPiLeft);
-                buttonTurnLeft.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        robotMoveControl.turnLeft();
-                    }
-                });
-
-                Button buttonMoveForward = (Button) findViewById(R.id.buttonForward);
-                buttonMoveForward.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        robotMoveControl.moveForward();
-                    }
-                });
-            }
-        });
 
         Button buttonReconnectToRobot = (Button) findViewById(R.id.buttonReconnectToRobot);
         buttonReconnectToRobot.setOnClickListener(new View.OnClickListener() {
@@ -497,9 +472,9 @@ public class MainActivity extends Activity {
                     }
                 });
             }
-            if (!key.equals("stop")) {
-                readIncomingMessage = new ReadIncomingMessage();
-                readIncomingMessage.start();
+            if (key.indexOf("mapping") != -1) {
+                BluetoothCommands bluetoothCommands = new BluetoothCommands(link);
+                bluetoothCommands.runFromBluetoothCommands(key);
             }
             if (key.equals("stop")) {
                 Log.i(TAG, "key == stop");
@@ -507,8 +482,14 @@ public class MainActivity extends Activity {
                 setServerState(SERVER_WAITING_NEW_TASK);
                 setClientConnectionState(CLIENT_NO_CONNECTION);
             }
+            if (!key.equals("stop")) {
+                readIncomingMessage = new ReadIncomingMessage();
+                readIncomingMessage.start();
+            }
         } catch(IndexOutOfBoundsException e) {
             Log.i(TAG,"IndexOutOfBoundsException");
+            readIncomingMessage = new ReadIncomingMessage();
+            readIncomingMessage.start();
         }
     }
 
