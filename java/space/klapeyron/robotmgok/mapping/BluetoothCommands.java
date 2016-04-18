@@ -74,5 +74,6 @@ public class BluetoothCommands {
     }
 
     private void clearFile() {
+        mainActivity.clearFile();
     }
 }
