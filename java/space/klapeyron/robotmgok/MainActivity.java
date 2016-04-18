@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -19,8 +20,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -122,6 +126,7 @@ public class MainActivity extends Activity {
     private BluetoothDevice clientDevice; //девайс клиента (для восстановления связи при потере сокета)
     private BluetoothSocket clientSocket; //канал соединения с последним клиентом
     private ReadIncomingMessage readIncomingMessage;
+    public Measurement measurement;
 
 
     ru.rbot.android.bridge.service.robotcontroll.robots.Robot robot;
@@ -145,46 +150,45 @@ public class MainActivity extends Activity {
 
     //////***BLE***
     ArrayList<String> beacons = new ArrayList<String>();
+    ArrayList<String> average = new ArrayList<>();
     ArrayAdapter<String> adapter;
+    ArrayAdapter<String> adapter2;
 
-    private Handler scanHandler;
-    private int scan_interval_ms = 400;
+    private Handler scanHandler = new Handler();
+    private int scan_interval_ms = 500;
     private boolean isScanning = false;
 
     //Данные выборки для сглаживания значений мощности сигнала и расстояния
-    int[][] rssiData = new int[10][2];
-    double[][] distanceData = new double[10][2];
-    double d = 0;
+    int P = 0;
     int f = 0; // флажок
 
     //Доступные маячки
     ArrayList<String> MAC = new ArrayList<>();
-    ArrayList<Double> distance = new ArrayList<>();
+    ArrayList<Integer> power = new ArrayList<>();
 
-    //mac-addresses
+    ArrayList<Integer> averpower = new ArrayList<>();
+    //TextView status;
+    //мау-адреса
     String mac[] = {
-            //Test-MACs:
-            /*"F4:B8:5E:DE:9D:0D",
-            "F4:B8:5E:DE:BA:55",
-            "F4:B8:5E:DE:D5:E7"*/
-
-            //Control MACs:
-            "F4:B8:5E:DE:BA:55",
-            "F4:B8:5E:DE:CA:B4",
-            "F4:B8:5E:DE:CD:F5"
-            /*"F4:B8:5E:DE:9D:0D",
-            "F4:B8:5E:DE:C2:8E",
-            "F4:B8:5E:DE:BD:1C",
-            "F4:B8:5E:DE:D5:E7",
             "F4:B8:5E:DE:BA:55",
             "F4:B8:5E:DE:CA:B4",
             "F4:B8:5E:DE:CD:F5",
-            "F4:B8:5E:DD:EB:77",
+            "F4:B8:5E:DE:9D:0D",
             "F4:B8:5E:DE:CD:DD",
-            "F4:B8:5E:DE:D5:B5"*/};
+            "F4:B8:5E:DE:D5:E7"};
+    //"F4:B8:5E:DE:C2:8E", без этикетки
+    //"F4:B8:5E:DE:BD:1C", без этикетки
+    //"F4:B8:5E:DD:EB:77", не робит
+    //"F4:B8:5E:DE:D5:B5", без этикетки
+    //coords
 
-    double Distance[] = new double[3];
-    String Mac[] = new String[3];
+    String data;
+    String fuckingDataFromFile;
+    String parsedData[][][][] = new String[13][18][mac.length][4];
+    int X = 0;
+    int Y = 0;
+    int measure_counter;
+
 //////***BLE***(end)
 
 ///////////VARIABLES///////////(end)
@@ -251,6 +255,8 @@ public class MainActivity extends Activity {
         Log.i(TAG, "bluetoothConstructor");
         scanHandler = new Handler();
         scanHandler.post(scanRunnable);
+        measurement = new Measurement();
+
         registerReceiver(incomingPairRequestReceiver, new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)); //pair request listener (disposable)
         pairedDevices = bluetoothAdapter.getBondedDevices(); //получаем список сопряженных устройств
         AcceptIncomingConnection acceptIncomingConnection = new AcceptIncomingConnection();
@@ -519,15 +525,6 @@ public class MainActivity extends Activity {
     }
 //////BLUETOOTH//////////(end)
 
-
-
-
-
-
-
-
-
-
     //////***BLE***(start)
     private Runnable scanRunnable = new Runnable()
     {
@@ -580,109 +577,163 @@ public class MainActivity extends Activity {
 
                 byte txPower = scanRecord[29];
 
-                int i,j,k = 0;
+                int i;
 
                 String macBuf = device.toString();
-
-                //Обновление маячков
                 f = 0;
                 if (MAC.size() != 0) {
                     for (i = 0; i < MAC.size(); i++) {
                         if (macBuf.equals(MAC.get(i))) {
-                            optimizeRssiData(i,rssi);
-                            d = distance(Integer.parseInt(Byte.toString(txPower)) - rssiData[i][0]);
-                            optimizeDistanceData(i);
-                            distanceData[i][0] = Math.round(distanceData[i][0]*100.00)/100.00;
-                            distance.set(i, distanceData[i][0]);
+                            P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                            power.set(i, P);
                             f = 1;
                         }
                     }
 
                     if (f == 0) {
-                        optimizeRssiData(i,rssi);
-                        d = distance(Integer.parseInt(Byte.toString(txPower)) - rssiData[i][0]);
-                        optimizeDistanceData(i);
-                        distanceData[i][0] = Math.round(distanceData[i][0]*100.00)/100.00;
-                        MAC.add(macBuf);
-                        distance.add(distanceData[i][0]);
+                        if (include(macBuf) == 1){
+                            MAC.add(macBuf);
+                            P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                            power.add(P);
+                        }
                     }
                 }
-                else {
-                    MAC.add(macBuf);
-                    distance.add(distanceData[0][0]);
+                else{
+                    if (include(macBuf) == 1){
+                        MAC.add(macBuf);
+                        P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                        power.add(P);
+                    }
                 }
 
                 //Запись в beacons
                 if (MAC.size() != 0) {
                     beacons.clear();
                     for (i = 0; i < MAC.size(); i++) {
-                        beacons.add("MAC: " + MAC.get(i) + "      distance:  " + distance.get(i).toString() + "m");
+                        beacons.add("MAC: " + MAC.get(i) + "      power: " + power.get(i).toString());
                     }
                 }
-                Log.i("MAC.size", Integer.toString(MAC.size()));
-
-                if (MAC.size() > 2) {
-                    String[] tmpMac = new String[MAC.size()];
-                    for (i = 0; i < MAC.size(); i++){
-                        tmpMac[i] = MAC.get(i);
-                    }
-                    double[] tmpDistance = new double[distance.size()];
-                    for (i = 0; i < distance.size(); i++){
-                        tmpDistance[i] = distance.get(i);
-                    }
-                    sort(tmpDistance, tmpMac);
-                    for (i = 0; i < 3; i++) {
-                        for (j = 0; j < mac.length; j++){
-                            if (tmpMac[i].equals(mac[j])){
-                                Distance[k] = tmpDistance[i];
-                                Mac[k] = tmpMac[i];
-                                k++;
-                            }
-                        }
-                    }
-                    Log.i("Distance(MA)", Double.toString(Distance[0]) + "  " + Double.toString(Distance[1]) + "  " + Double.toString(Distance[2]));
-                    Log.i("Mac(MA)", Mac[0] + "  " + Mac[1] + "  " + Mac[2]);
-                }
+                adapter.notifyDataSetChanged();
             }
         }
     };
-    double distance(int power){
-        if (power < 5) return (0.0399 * power + 0.7951);
-        else return (Math.pow(10,((power - 1.6) / 20)));
-    }
 
-    void optimizeRssiData(int i, int rssi){
-        rssiData[i][1] = rssiData[i][0];
-        rssiData[i][0] = rssi;
+    public class Measurement extends Thread {
+        @Override
+        public void run(){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //status = (TextView) findViewById(R.id.textView2);
+                    Log.i("TAG", "run");
+                    //первичное заполнение
+                    for (int j = 0; j < MAC.size(); j++) {
+                        averpower.add(0);
+                    }
+                    //усреднение
+                    int i;
+                    for (i = 0; i < 10; i++) {
+                        for (int j = 0; j < MAC.size(); j++) {
+                            averpower.set(j, averpower.get(j) + power.get(j));
+                        }
+                        try {
+                            Measurement.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    for (int j = 0; j < MAC.size(); j++) {
+                        averpower.set(j, (averpower.get(j) / i));
+                    }
+                    //запись в average
+                    average.clear();
+                    for (i = 0; i < MAC.size(); i++) {
+                        average.add("MAC: " + MAC.get(i) + "      average_power: " + averpower.get(i).toString());
+                    }
+                    adapter2.notifyDataSetChanged();
 
-        while ((rssiData[i][0] - rssiData[i][1]) > 2)
-            rssiData[i][0] = (rssiData[i][0] + rssiData[i][1])/2;
-    }
-
-    void optimizeDistanceData(int i){
-        distanceData[i][1] = distanceData[i][0];
-        distanceData[i][0] = d;
-
-        if (distanceData[i][0] < 0) distanceData[i][0] = 0;
-        while ((distanceData[i][0] - distanceData[i][1]) > 1.5)
-            distanceData[i][0] = (distanceData[i][0] + distanceData[i][1])/2;
-    }
-
-    public void sort(double[] arr, String[] str){
-        for(int i = arr.length-1 ; i > 0 ; i--){
-            for(int j = 0 ; j < i ; j++){
-                if( arr[j] > arr[j+1] ){
-
-                    double tmp = arr[j];
-                    arr[j] = arr[j+1];
-                    arr[j+1] = tmp;
-
-                    String string = str[j];
-                    str[j] = str[j+1];
-                    str[j+1] = string;
+                    //WRITE FILE
+                    //FILE
+                    File fileName = null;
+                    FileOutputStream os = null;
+                    if (isExternalStorageWritable()) {
+                        File sdDir = android.os.Environment.getExternalStorageDirectory();
+                        File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
+                        dir.mkdir();
+                        fileName = new File(dir, "example.txt");
+                        try {
+                            os = new FileOutputStream(fileName, true);
+                            data = "";
+                            if (measure_counter == 0) data +="Coords," + X + "," + Y + "\n";
+                            for (i = 0; i < MAC.size(); i++) {
+                                data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
+                            }
+                            data += "\n";
+                            measure_counter = measure_counter + 1;
+                            if (measure_counter == 4) measure_counter = 0;
+                            os.write(data.getBytes());
+                            os.close();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.i("TAG", "Write_exception");
+                        }
+                    } else {
+                        Log.i("TAG", "SD_not_available");
+                    }
+                    //FILE
+                    //status.setText("measurment has been ended.. code: " + (measure_counter));
+                    Log.i("TAG", "ui_end");
                 }
-            }
+            });
         }
+    };
+
+    int include(String macBuf) {
+        int f = 0;
+        for (int i = 0; i < mac.length; i++){
+            if (macBuf.equals(mac[i])) f = 1;
+        }
+        return f;
+    }
+
+    public void startMeasure(){
+        //status.setText("is measuring.. ");
+        Measurement measurement = new Measurement();
+        measurement.start();
+    }
+
+    public void counterReset(View v){
+        measure_counter = 0;
+        //status.setText("counter = 0");
+    }
+
+    /*private void showAverage() {
+        adapter2 = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, average);
+        ListView listView2 = (ListView)findViewById(R.id.listView2);
+        listView2.setAdapter(adapter2);
+    }*/
+    /*private void showBeacons() {
+
+        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, beacons);
+        ListView listView = (ListView)findViewById(R.id.listView);
+        listView.setAdapter(adapter);
+    }*/
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
     }
 //////***BLE***(end)
 }

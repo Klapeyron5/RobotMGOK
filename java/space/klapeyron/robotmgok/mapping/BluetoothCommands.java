@@ -5,8 +5,10 @@ import space.klapeyron.robotmgok.MainActivity;
 public class BluetoothCommands {
 
     private RobotMoveControl robotMoveControl;
+    private MainActivity mainActivity;
 
     public BluetoothCommands(MainActivity m) {
+        mainActivity = m;
         robotMoveControl = new RobotMoveControl(m.robotWrap);
     }
 
@@ -40,6 +42,6 @@ public class BluetoothCommands {
     }
 
     private void measure () {
-
+        mainActivity.startMeasure();
     }
 }
