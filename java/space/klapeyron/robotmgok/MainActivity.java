@@ -151,8 +151,8 @@ public class MainActivity extends Activity {
     //////***BLE***
     ArrayList<String> beacons = new ArrayList<String>();
     ArrayList<String> average = new ArrayList<>();
-    ArrayAdapter<String> adapter;
-    ArrayAdapter<String> adapter2;
+ //   ArrayAdapter<String> adapter;
+ //   ArrayAdapter<String> adapter2;
 
     private Handler scanHandler = new Handler();
     private int scan_interval_ms = 500;
@@ -613,7 +613,7 @@ public class MainActivity extends Activity {
                         beacons.add("MAC: " + MAC.get(i) + "      power: " + power.get(i).toString());
                     }
                 }
-                adapter.notifyDataSetChanged();
+                //adapter.notifyDataSetChanged();
             }
         }
     };
@@ -650,7 +650,7 @@ public class MainActivity extends Activity {
                     for (i = 0; i < MAC.size(); i++) {
                         average.add("MAC: " + MAC.get(i) + "      average_power: " + averpower.get(i).toString());
                     }
-                    adapter2.notifyDataSetChanged();
+             //       adapter2.notifyDataSetChanged();
 
                     //WRITE FILE
                     //FILE
