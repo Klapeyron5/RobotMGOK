@@ -15,19 +15,28 @@ public class RobotMoveControl {
     }
 
     public void turnLeft() {
-        AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple((float)Math.PI/2);
-        angleTurnThreadSimple.start();
-        try {
-            angleTurnThreadSimple.join();
-        } catch (InterruptedException e) {}
+        (new Thread() {
+            @Override
+            public void run() {
+                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple((float)Math.PI/2);
+                angleTurnThreadSimple.start();
+                try {
+                    angleTurnThreadSimple.join();
+                } catch (InterruptedException e) {}
+            }
+        }).start();
     }
 
-    public void moveForward() {
-        ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
-        forwardMoveThread.start();
-        try {
-            forwardMoveThread.join();
-        } catch (InterruptedException e) {}
+    public void moveForward() {(new Thread() {
+        @Override
+        public void run() {
+            ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
+            forwardMoveThread.start();
+            try {
+                forwardMoveThread.join();
+            } catch (InterruptedException e) {}
+        }
+    }).start();
     }
 
     private class AngleTurnThreadSimple extends Thread {

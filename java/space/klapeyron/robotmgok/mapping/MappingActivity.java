@@ -22,13 +22,5 @@ public class MappingActivity extends Activity {
     private void initConstructor() {
         robotWrap = new RobotWrapMapping(this);
         robotMoveControl = new RobotMoveControl(robotWrap);
-
-        Button button = (Button) findViewById(R.id.buttonPiRight);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                robotMoveControl.turnLeft();
-            }
-        });
     }
 }

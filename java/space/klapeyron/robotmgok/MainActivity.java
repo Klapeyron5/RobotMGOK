@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
         screenHeight = metrics.heightPixels;
         screenWidth = metrics.widthPixels;
 
-        setContentView(R.layout.main2);
+        setContentView(R.layout.main);
         initConstructor();
 
         setClientConnectionState(CLIENT_HASNT_BEEN_CONNECTED);
@@ -237,13 +237,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 //TODO //current state is wrong (coordinates)
                 stopRiding();
-            }
-        });
-
-        Button buttonCalibrate = (Button) findViewById(R.id.buttonCalibrate);
-        buttonCalibrate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
             }
         });
 

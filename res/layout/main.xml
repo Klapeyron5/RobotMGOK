@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -123,8 +124,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Map"
-                android:id="@+id/buttonMap" />
+                android:text="mapping"
+                android:id="@+id/buttonMapping" />
 
             <Button
                 style="?android:attr/buttonStyleSmall"
@@ -166,55 +167,6 @@
                 android:textStyle="bold"
                 android:layout_gravity="center" />
         </FrameLayout>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="finish X,Y"
-                    android:layout_column="0"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="6">
-
-                <EditText
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:ems="10"
-                    android:id="@+id/editTextFinishX"
-                    android:layout_column="2"
-                    android:layout_weight="1"
-                    android:layout_gravity="left|center_vertical"
-                    android:text="0" />
-
-                <EditText
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:ems="10"
-                    android:id="@+id/editTextFinishY"
-                    android:layout_column="3"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
-                    android:text="0" />
-            </FrameLayout>
-
-        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
@@ -299,8 +251,6 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Calibrate"
-                android:id="@+id/buttonCalibrate"
                 android:layout_weight="1" />
 
             <Button
@@ -471,16 +421,12 @@
 
     </TableLayout>
 
-    <RelativeLayout
+    <fragment
+        android:id="@+id/qr_fragment"
+        android:name="space.klapeyron.robotmgok.QRFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <SurfaceView
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:id="@+id/surfaceViewCamera"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        tools:layout="@layout/qr_fragment">
+    </fragment>
 
 </LinearLayout>
