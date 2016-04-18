@@ -132,7 +132,7 @@ public class RobotMoveControl {
         private float startAngle;
 
         private float rangeValidDeviation = 0.01f;
-        private float standardSpeed = 7.0f;
+        private float standardSpeed = 3.5f;
         private float correctionSpeed = 0.2f;
         private float correctionSpeedCorrection = 0.1f;
 
