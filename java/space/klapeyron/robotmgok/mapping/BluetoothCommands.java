@@ -1,5 +1,7 @@
 package space.klapeyron.robotmgok.mapping;
 
+import android.util.Log;
+
 import space.klapeyron.robotmgok.MainActivity;
 
 public class BluetoothCommands {
@@ -24,10 +26,18 @@ public class BluetoothCommands {
                 turnRight();
                 break;
             case "mapping measure":
-                measure();
+                try {
+                    measure();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "mapping clear file":
-                clearFile();
+                try {
+                    clearFile();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
@@ -66,14 +76,19 @@ public class BluetoothCommands {
             mainActivity.robotWrap.currentDirection = 0;
     }
 
-    private void measure () {
+    private void measure() throws InterruptedException {
         mainActivity.robotWrap.currentCellX = 3;
         mainActivity.robotWrap.currentCellY = 13;
         mainActivity.robotWrap.currentDirection = 0;
-        mainActivity.startMeasure();
+
+        for (int i = 0; i < 4; i++) {
+            mainActivity.startMeasure();
+            turnRight();
+            Log.i("TAG", "WTF" + Integer.toString(i));
+        }
     }
 
-    private void clearFile() {
+    private void clearFile() throws InterruptedException {
         mainActivity.clearFile();
     }
 }

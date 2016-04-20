@@ -10,6 +10,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -581,39 +583,37 @@ public class MainActivity extends Activity {
 
                 String macBuf = device.toString();
                 f = 0;
-                if (MAC.size() != 0) {
-                    for (i = 0; i < MAC.size(); i++) {
-                        if (macBuf.equals(MAC.get(i))) {
-                            P = Integer.parseInt(Byte.toString(txPower)) - rssi;
-                            power.set(i, P);
-                            f = 1;
-                        }
-                    }
+                        if (MAC.size() != 0) {
+                            for (i = 0; i < MAC.size(); i++) {
+                                if (macBuf.equals(MAC.get(i))) {
+                                    P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                                    power.set(i, P);
+                                    f = 1;
+                                }
+                            }
 
-                    if (f == 0) {
-                        if (include(macBuf) == 1){
-                            MAC.add(macBuf);
-                            P = Integer.parseInt(Byte.toString(txPower)) - rssi;
-                            power.add(P);
+                            if (f == 0) {
+                                if (include(macBuf) == 1) {
+                                    MAC.add(macBuf);
+                                    P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                                    power.add(P);
+                                }
+                            }
+                        } else {
+                            if (include(macBuf) == 1) {
+                                MAC.add(macBuf);
+                                P = Integer.parseInt(Byte.toString(txPower)) - rssi;
+                                power.add(P);
+                            }
                         }
-                    }
-                }
-                else{
-                    if (include(macBuf) == 1){
-                        MAC.add(macBuf);
-                        P = Integer.parseInt(Byte.toString(txPower)) - rssi;
-                        power.add(P);
-                    }
-                }
 
-                //Запись в beacons
-                if (MAC.size() != 0) {
-                    beacons.clear();
-                    for (i = 0; i < MAC.size(); i++) {
-                        beacons.add("MAC: " + MAC.get(i) + "      power: " + power.get(i).toString());
-                    }
-                }
-                //adapter.notifyDataSetChanged();
+                        //Запись в beacons
+                        if (MAC.size() != 0) {
+                            beacons.clear();
+                            for (i = 0; i < MAC.size(); i++) {
+                                beacons.add("MAC: " + MAC.get(i) + "      power: " + power.get(i).toString());
+                            }
+                        }
             }
         }
     };
@@ -621,73 +621,72 @@ public class MainActivity extends Activity {
     public class Measurement extends Thread {
         @Override
         public void run(){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //status = (TextView) findViewById(R.id.textView2);
-                    Log.i("TAG", "run");
-                    //первичное заполнение
-                    for (int j = 0; j < MAC.size(); j++) {
-                        averpower.add(0);
-                    }
-                    //усреднение
-                    int i;
-                    for (i = 0; i < 10; i++) {
+                        Log.i("TAG", "run");
+                        //первичное заполнение
                         for (int j = 0; j < MAC.size(); j++) {
-                            averpower.set(j, averpower.get(j) + power.get(j));
+                            averpower.add(0);
                         }
-                        try {
-                            Measurement.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    for (int j = 0; j < MAC.size(); j++) {
-                        averpower.set(j, (averpower.get(j) / i));
-                    }
-                    //запись в average
-                    average.clear();
-                    for (i = 0; i < MAC.size(); i++) {
-                        average.add("MAC: " + MAC.get(i) + "      average_power: " + averpower.get(i).toString());
-                    }
-             //       adapter2.notifyDataSetChanged();
-
-                    //WRITE FILE
-                    //FILE
-                    File fileName = null;
-                    FileOutputStream os = null;
-                    if (isExternalStorageWritable()) {
-                        File sdDir = android.os.Environment.getExternalStorageDirectory();
-                        File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
-                        dir.mkdir();
-                        fileName = new File(dir, "example.txt");
-                        try {
-                            os = new FileOutputStream(fileName, true);
-                            data = "";
-                            X = robotWrap.currentCellX;
-                            Y = robotWrap.currentCellY;
-                        //    int dir = robotWrap.currentDirection;
-                            if (measure_counter == 0) data +="Coords," + X + "," + Y + "\n";
-                            for (i = 0; i < MAC.size(); i++) {
-                                data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
+                        //усреднение
+                        int i;
+                            for (i = 0; i < 10; i++) {
+                                for (int j = 0; j < MAC.size(); j++) {
+                                    averpower.set(j, averpower.get(j) + power.get(j));
+                                }
+                                try {
+                                    Measurement.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                            data += "\n";
-                            measure_counter = measure_counter + 1;
-                            if (measure_counter == 4) measure_counter = 0;
-                            os.write(data.getBytes());
-                            os.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Log.i("TAG", "Write_exception");
+                        for (int j = 0; j < MAC.size(); j++) {
+                            averpower.set(j, (averpower.get(j) / i));
                         }
-                    } else {
-                        Log.i("TAG", "SD_not_available");
-                    }
-                    //FILE
-                    //status.setText("measurment has been ended.. code: " + (measure_counter));
-                    Log.i("TAG", "ui_end");
-                }
-            });
+                        //запись в average
+                        average.clear();
+                        for (i = 0; i < MAC.size(); i++) {
+                            average.add("MAC: " + MAC.get(i) + "      average_power: " + averpower.get(i).toString());
+                        }
+                        //WRITE FILE
+                        //FILE
+                        File fileName = null;
+                        FileOutputStream os = null;
+                        if (isExternalStorageWritable()) {
+                            File sdDir = android.os.Environment.getExternalStorageDirectory();
+                            File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
+                            dir.mkdir();
+                            fileName = new File(dir, "example.txt");
+                            try {
+                                os = new FileOutputStream(fileName, true);
+                                data = "";
+                                X = robotWrap.currentCellX;
+                                Y = robotWrap.currentCellY;
+                                //int dir = robotWrap.currentDirection;
+                                if (measure_counter == 0) data += "Coords," + X + "," + Y + "\n";
+                                for (i = 0; i < MAC.size(); i++) {
+                                    data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
+                                }
+                                data += "\n";
+                                measure_counter = measure_counter + 1;
+                                if (measure_counter == 4) measure_counter = 0;
+                                os.write(data.getBytes());
+                                os.close();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.i("TAG", "Write_exception");
+                            }
+                        } else {
+                            Log.i("TAG", "SD_not_available");
+                        }
+            //beep
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+                                        tg.startTone(ToneGenerator.TONE_PROP_BEEP2);
+                                    }
+                                });
+                        //FILE
+                        Log.i("TAG", "ui_end");
         }
     };
 
@@ -699,13 +698,16 @@ public class MainActivity extends Activity {
         return f;
     }
 
-    public void startMeasure(){
-        //status.setText("is measuring.. ");
-        Measurement measurement = new Measurement();
-        measurement.start();
+    public void startMeasure() throws InterruptedException {
+
+                Measurement measurement = new Measurement();
+                measurement.start();
+                measurement.join();
+
     }
 
-    public void clearFile(){
+    public void clearFile() throws InterruptedException {
+        measurement.join(); //не выполняет главные поток, пока не закончится measurement
         measure_counter = 0;
         File fileName = null;
         FileOutputStream os = null;

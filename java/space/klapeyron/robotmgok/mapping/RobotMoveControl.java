@@ -29,19 +29,27 @@ public class RobotMoveControl {
     }
 
     public void turnRight() {
-        (new Thread() {
+        Thread shit = new Thread(){
             @Override
-            public void run() {
-                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float)Math.PI/2);
+            public void run(){
+                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float) Math.PI / 2);
                 angleTurnThreadSimple.start();
                 try {
                     angleTurnThreadSimple.join();
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
             }
-        }).start();
+        };
+        shit.start();
+        try {
+            shit.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void moveForward() {
+        Log.i("TAG", "forwardStart");
         (new Thread() {
             @Override
             public void run() {
@@ -52,6 +60,7 @@ public class RobotMoveControl {
                 } catch (InterruptedException e) {}
             }
         }).start();
+        Log.i("TAG", "forwardStop");
     }
 
     private class AngleTurnThreadSimple extends Thread {
