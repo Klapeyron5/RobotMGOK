@@ -731,18 +731,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    /*private void showAverage() {
-        adapter2 = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, average);
-        ListView listView2 = (ListView)findViewById(R.id.listView2);
-        listView2.setAdapter(adapter2);
-    }*/
-    /*private void showBeacons() {
-
-        adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, beacons);
-        ListView listView = (ListView)findViewById(R.id.listView);
-        listView.setAdapter(adapter);
-    }*/
-
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
