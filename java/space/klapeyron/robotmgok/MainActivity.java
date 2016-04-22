@@ -191,6 +191,8 @@ public class MainActivity extends Activity {
     int Y = 0;
     int measure_counter;
 
+    String lineSeparator = System.getProperty("line.separator");
+
 //////***BLE***(end)
 
 ///////////VARIABLES///////////(end)
@@ -259,7 +261,6 @@ public class MainActivity extends Activity {
         scanHandler.post(scanRunnable);
         measurement = new Measurement();
 
-        registerReceiver(incomingPairRequestReceiver, new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)); //pair request listener (disposable)
         pairedDevices = bluetoothAdapter.getBondedDevices(); //получаем список сопряженных устройств
         AcceptIncomingConnection acceptIncomingConnection = new AcceptIncomingConnection();
         acceptIncomingConnection.start(); //запускаем серверную прослушку входящих БТ запросов (disposable)
@@ -412,6 +413,7 @@ public class MainActivity extends Activity {
     }
 
     private void acceptIncomingConnectionMethod() {
+        registerReceiver(incomingPairRequestReceiver, new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)); //pair request listener (disposable)
         BluetoothServerSocket serverSocket = null;
         try {
             Log.i(TAG, "1");
@@ -434,6 +436,7 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             Log.i(TAG, "6");
         }
+        unregisterReceiver(incomingPairRequestReceiver);
     }
 
     private void readIncomingMessageMethod() {
@@ -658,14 +661,15 @@ public class MainActivity extends Activity {
                             try {
                                 os = new FileOutputStream(fileName, true);
                                 data = "";
-                                X = robotWrap.currentCellX;
-                                Y = robotWrap.currentCellY;
-                                //int dir = robotWrap.currentDirection;
-                                if (measure_counter == 0) data += "Coords," + X + "," + Y + "\n";
+                                int X = robotWrap.currentCellX;
+                                int Y = robotWrap.currentCellY;
+                                int D = robotWrap.currentDirection;
+                                if (measure_counter == 0) data += "Coords," + X + "," + Y + lineSeparator;
+                                data += "dir," + D + ",";
                                 for (i = 0; i < MAC.size(); i++) {
                                     data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
                                 }
-                                data += "\n";
+                                data += lineSeparator;
                                 measure_counter = measure_counter + 1;
                                 if (measure_counter == 4) measure_counter = 0;
                                 os.write(data.getBytes());
@@ -690,12 +694,12 @@ public class MainActivity extends Activity {
         return f;
     }
 
-    public void startMeasure() throws InterruptedException {
-
-                Measurement measurement = new Measurement();
-                measurement.start();
-                measurement.join();
-
+    public void startMeasure() {
+        Measurement measurement = new Measurement();
+        measurement.start();
+        try {
+            measurement.join();
+        } catch (InterruptedException e) {}
     }
 
     public void clearFile() throws InterruptedException {

@@ -45,22 +45,15 @@ public class BluetoothCommands {
     private void moveForward() {
         Log.i("TAG", "BluetoothCommands moveForward Start");
         robotMoveControl.moveForward();
-        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
         Log.i("TAG", "BluetoothCommands moveForward Stop");
     }
 
     private void turnLeft() {
-        Log.i("TAG", "BluetoothCommands turnLeft Start");
         robotMoveControl.turnLeft();
-        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
-        Log.i("TAG", "BluetoothCommands turnLeft Stop");
     }
 
     private void turnRight() {
-        Log.i("TAG", "BluetoothCommands turnRight Start");
         robotMoveControl.turnRight();
-        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
-        Log.i("TAG", "BluetoothCommands turnRight Stop");
     }
 
     private void measure() throws InterruptedException {
@@ -69,6 +62,7 @@ public class BluetoothCommands {
         mainActivity.robotWrap.currentCellY = 13;
         mainActivity.robotWrap.currentDirection = 0;
 
+        neckUp();
         measureTurn(4,"left");
         moveForward();
         measureTurn(4, "left");
@@ -92,18 +86,23 @@ public class BluetoothCommands {
         Log.i("TAG", "BluetoothCommands measure Stop");
     }
 
+    private void neckUp() {
+        robotMoveControl.neckUp();
+    }
+
     private void clearFile() throws InterruptedException {
         mainActivity.clearFile();
     }
 
     private void measureTurn (int k, String side) {
         for (int i = 0; i < k; i++) {
-            //mainActivity.startMeasure();
+            mainActivity.startMeasure();
             if (side.equals("left"))
                 turnLeft();
             if (side.equals("right"))
                 turnRight();
-            Log.i("TAG", "measureTurn: " + Integer.toString(i));
         }
+        if (k==3)
+            mainActivity.startMeasure();
     }
 }

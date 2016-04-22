@@ -3,7 +3,10 @@ package space.klapeyron.robotmgok.mapping;
 import android.util.Log;
 
 import ru.rbot.android.bridge.service.robotcontroll.controllers.BodyController;
+import ru.rbot.android.bridge.service.robotcontroll.controllers.NeckController;
 import ru.rbot.android.bridge.service.robotcontroll.controllers.body.TwoWheelsBodyController;
+import ru.rbot.android.bridge.service.robotcontroll.controllers.neck.data.Neck;
+import ru.rbot.android.bridge.service.robotcontroll.controllers.neck.data.NeckSegment;
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
 import space.klapeyron.robotmgok.RobotWrap;
 
@@ -47,7 +50,7 @@ public class RobotMoveControl {
     }
 
     public void moveForward() {
-        Log.i("TAG", "forwardStart");
+        Log.i("TAG","forwardStart! angle: "+ robotWrap.odometryAngle);
         ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
         forwardMoveThread.start();
         try {
@@ -68,7 +71,45 @@ public class RobotMoveControl {
                 break;
         }
         robotWrap.currentCustorPosition = 0;
-        Log.i("TAG", "forwardStop");
+        Log.i("TAG", "forwardStop! angle: " + robotWrap.odometryAngle);
+    }
+
+    public void neckUp() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                NeckController neckController = null;
+                try {
+                    neckController = (NeckController) robotWrap.robot.getController(NeckController.class);
+                } catch (ControllerException e) {}
+                Neck neck = neckController.getNeck();
+                int neckSegmentsCount = neck.getSegmentsCount();
+                NeckSegment neckSegment = neck.getNeckSegment(0);
+                neckSegment.setFlag((byte) 0x02);
+                neckSegment.setSpeed(5);
+                neckSegment.setAngle(1.0f);
+
+                neckSegment = neck.getNeckSegment(1);
+                neckSegment.setFlag((byte) 0x02);
+                neckSegment.setSpeed(5);
+                neckSegment.setAngle(0.20f);
+
+                neckSegment = neck.getNeckSegment(2);
+                neckSegment.setFlag((byte) 0x02);
+                neckSegment.setSpeed(5);
+                neckSegment.setAngle(0.44f);
+
+                //    neckSegment.move();
+                neckController.refreshNeckPosition();
+                try {
+                    sleep(2000);
+                } catch (InterruptedException e) {}
+            }
+        };
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {}
     }
 
     private class AngleTurnThreadSimple extends Thread {
@@ -144,7 +185,7 @@ public class RobotMoveControl {
     }
 
     private class ForwardMoveThread extends Thread {
-        private float purposeDistance = 0.5f;
+        private float purposeDistance = 0.52f; //some more than 0.50
         private float startDistance;
         private float startAngle;
 
@@ -211,7 +252,7 @@ public class RobotMoveControl {
             } else
                 if (angleDifference > 0) { //отклонение вправо, корректируем влево
                     wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                    Log.i("TAG", "LEFT; start angle: " + startAngle + ";  angle: " + robotWrap.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+                    Log.i("TAG","LEFT; start angle: " + startAngle + ";  angle: " + robotWrap.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
                 } else { //отклонение влево, корректируем вправо
                     wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
                     Log.i("TAG","RIGH; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
@@ -227,7 +268,8 @@ public class RobotMoveControl {
                 while(!reachedTarget) {
                     if (robotWrap.odometryPath - startDistance >= purposeDistance) {
                         reachedTarget = true;
-                        Log.i("TAG","TARGET");
+                        wheelsController.setWheelsSpeeds(0.0f,0.0f);
+                        Log.i("TAG","TARGET! angle: "+ robotWrap.odometryAngle);
                     }
                 }
             }
