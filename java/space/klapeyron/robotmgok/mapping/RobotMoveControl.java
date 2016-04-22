@@ -16,57 +16,39 @@ public class RobotMoveControl {
     }
 
     public void turnLeft() {
-        (new Thread() {
-            @Override
-            public void run() {
+        Log.i("TAG", "turnLeft Start");
                 AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple((float)Math.PI/2);
                 angleTurnThreadSimple.start();
                 try {
                     angleTurnThreadSimple.join();
                 } catch (InterruptedException e) {}
-            }
-        }).start();
+        Log.i("TAG", "turnLeft Stop");
     }
 
     public void turnRight() {
-        Thread shit = new Thread(){
-            @Override
-            public void run(){
+        Log.i("TAG", "turnRight Start");
                 AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float) Math.PI / 2);
                 angleTurnThreadSimple.start();
                 try {
                     angleTurnThreadSimple.join();
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        shit.start();
-        try {
-            shit.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+                } catch (InterruptedException e) {}
+        Log.i("TAG", "turnRight Stop");
     }
 
     public void moveForward() {
         Log.i("TAG", "forwardStart");
-        (new Thread() {
-            @Override
-            public void run() {
                 ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
                 forwardMoveThread.start();
                 try {
                     forwardMoveThread.join();
                 } catch (InterruptedException e) {}
-            }
-        }).start();
         Log.i("TAG", "forwardStop");
     }
 
     private class AngleTurnThreadSimple extends Thread {
         private float purposeAngle;
         private float startAngle;
-        private float turnSpeed = 8.55f; //четыре поворота на пи/2, значение скоростей для точного 2пи поворота:
+        private float turnSpeed = 8.60f; //четыре поворота на пи/2, значение скоростей для точного 2пи поворота:
                                          //8.60-сразу после прямой езды(колесико смотрит вдоль направления робота)
                                          //8.68-после поворота(колесико смотрит перпендикулярно направлению робота)
 

@@ -677,14 +677,6 @@ public class MainActivity extends Activity {
                         } else {
                             Log.i("TAG", "SD_not_available");
                         }
-            //beep
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        final ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
-                                        tg.startTone(ToneGenerator.TONE_PROP_BEEP2);
-                                    }
-                                });
                         //FILE
                         Log.i("TAG", "ui_end");
         }
