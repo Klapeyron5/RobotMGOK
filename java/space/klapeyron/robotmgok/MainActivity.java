@@ -624,7 +624,10 @@ public class MainActivity extends Activity {
     public class Measurement extends Thread {
         @Override
         public void run(){
-                        Log.i("TAG", "run");
+            try {
+                sleep(2000);
+            } catch (InterruptedException e) {}
+            Log.i("TAG", "run");
                         //первичное заполнение
                         for (int j = 0; j < MAC.size(); j++) {
                             averpower.add(0);

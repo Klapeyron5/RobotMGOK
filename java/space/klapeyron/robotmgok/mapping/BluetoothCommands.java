@@ -2,6 +2,8 @@ package space.klapeyron.robotmgok.mapping;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import space.klapeyron.robotmgok.MainActivity;
 
 public class BluetoothCommands {
@@ -43,9 +45,7 @@ public class BluetoothCommands {
     }
 
     private void moveForward() {
-        Log.i("TAG", "BluetoothCommands moveForward Start");
         robotMoveControl.moveForward();
-        Log.i("TAG", "BluetoothCommands moveForward Stop");
     }
 
     private void turnLeft() {
@@ -57,10 +57,11 @@ public class BluetoothCommands {
     }
 
     private void measure() throws InterruptedException {
-        Log.i("TAG", "BluetoothCommands measure Start");
         mainActivity.robotWrap.currentCellX = 3;
         mainActivity.robotWrap.currentCellY = 13;
         mainActivity.robotWrap.currentDirection = 0;
+
+     //   handleMappingPath(new int[]{0,0,0,1,2,2,2,1,0,0,0});
 
         neckUp();
         measureTurn(4,"left");
@@ -82,8 +83,6 @@ public class BluetoothCommands {
         measureTurn(4,"left");
         moveForward();
         measureTurn(4,"left");
-
-        Log.i("TAG", "BluetoothCommands measure Stop");
     }
 
     private void neckUp() {
@@ -92,6 +91,22 @@ public class BluetoothCommands {
 
     private void clearFile() throws InterruptedException {
         mainActivity.clearFile();
+    }
+
+    private void handleMappingPath(int[] absPath) {
+        neckUp();
+
+        ArrayList<Integer> path = new ArrayList<>();
+
+        //обработка четверичного массива в троичный (старт)
+        //обработка начального положения (старт)
+        if (Math.abs(mainActivity.robotWrap.currentDirection-absPath[0])>2) {
+            turnRight();
+        }
+
+        for (int i=0;i<absPath.length;i++) {
+
+        }
     }
 
     private void measureTurn (int k, String side) {

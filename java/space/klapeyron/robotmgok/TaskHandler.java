@@ -24,7 +24,17 @@ public class TaskHandler {
 
     private final static float SQUARE_WIDTH = 0.5f;
 
-    private int[] arrayPath = {1,1,2,1,1,0,1};
+    private int[] arrayPath = {
+            2,2,2,2,1,
+            2,2,2,2,1,
+            2,2,2,1,
+            2,2,2,1,
+            2,2,2,2,1,
+            0,0,0,1,
+            0,0,0,1,
+            2,2,2,2,1,
+            2,2,2,2,1
+    };
     private ArrayList<Integer> path;//0-right; 1-forward; 2-left;
 
     public int finishX = 0;
@@ -770,6 +780,7 @@ public class TaskHandler {
 
     //TODO
     private void arrayInList() {
+        path.clear();
         for(int i=0;i<arrayPath.length;i++)
             path.add(arrayPath[i]);
     }
