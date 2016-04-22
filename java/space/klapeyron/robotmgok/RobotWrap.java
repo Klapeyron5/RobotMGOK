@@ -26,7 +26,22 @@ public class RobotWrap {
 
     //counted odometry info
     public float countedPath;
-    public int currentDirection; //0: positive direction on X; 1: positive dir on Y; 2: negative on X; 3: negative on Y;
+
+    /**Current Robot Direction:
+     * <p>0: positive direction on X; </p>
+     * <p>1: positive dir on Y;</p>
+     * <p>2: negative on X;</p>
+     * <p>3: negative on Y;</p>*/
+    public int currentDirection;
+
+    /**Current position of small wheel on Robot ass:
+     * <p>position to RobotWrap.currentDirection</p>
+     * <p>0: in parallel to;</p>
+     * <p>1: clockwise (perpendicular to);</p>
+     * <p>2: counterclockwise (perpendicular to);</p>
+     * <p>3: in anti parallel to;</p>
+     * <p>4: not 0,1,2,3 values;</p>*/
+    public int currentCustorPosition;
 
     //primary odometry info
     public float odometryPath;

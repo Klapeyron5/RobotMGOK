@@ -17,31 +17,57 @@ public class RobotMoveControl {
 
     public void turnLeft() {
         Log.i("TAG", "turnLeft Start");
-                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple((float)Math.PI/2);
-                angleTurnThreadSimple.start();
-                try {
-                    angleTurnThreadSimple.join();
-                } catch (InterruptedException e) {}
+        AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple((float)Math.PI/2);
+        angleTurnThreadSimple.start();
+        try {
+            angleTurnThreadSimple.join();
+        } catch (InterruptedException e) {}
+        if(robotWrap.currentDirection!=0)
+            robotWrap.currentDirection--;
+        else
+            robotWrap.currentDirection = 3;
+        robotWrap.currentCustorPosition = 2;
         Log.i("TAG", "turnLeft Stop");
     }
 
     public void turnRight() {
         Log.i("TAG", "turnRight Start");
-                AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float) Math.PI / 2);
-                angleTurnThreadSimple.start();
-                try {
-                    angleTurnThreadSimple.join();
-                } catch (InterruptedException e) {}
+        AngleTurnThreadSimple angleTurnThreadSimple = new AngleTurnThreadSimple(-(float) Math.PI / 2);
+        angleTurnThreadSimple.start();
+        try {
+            angleTurnThreadSimple.join();
+        } catch (InterruptedException e) {}
+
+        if(robotWrap.currentDirection!=3)
+            robotWrap.currentDirection++;
+        else
+            robotWrap.currentDirection = 0;
+        robotWrap.currentCustorPosition = 1;
         Log.i("TAG", "turnRight Stop");
     }
 
     public void moveForward() {
         Log.i("TAG", "forwardStart");
-                ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
-                forwardMoveThread.start();
-                try {
-                    forwardMoveThread.join();
-                } catch (InterruptedException e) {}
+        ForwardMoveThread forwardMoveThread = new ForwardMoveThread();
+        forwardMoveThread.start();
+        try {
+            forwardMoveThread.join();
+        } catch (InterruptedException e) {}
+        switch (robotWrap.currentDirection) {
+            case 0:
+                robotWrap.currentCellX++;
+                break;
+            case 1:
+                robotWrap.currentCellY++;
+                break;
+            case 2:
+                robotWrap.currentCellX--;
+                break;
+            case 3:
+                robotWrap.currentCellY--;
+                break;
+        }
+        robotWrap.currentCustorPosition = 0;
         Log.i("TAG", "forwardStop");
     }
 

@@ -45,40 +45,21 @@ public class BluetoothCommands {
     private void moveForward() {
         Log.i("TAG", "BluetoothCommands moveForward Start");
         robotMoveControl.moveForward();
-        switch (mainActivity.robotWrap.currentDirection) {
-            case 0:
-                mainActivity.robotWrap.currentCellX++;
-                break;
-            case 1:
-                mainActivity.robotWrap.currentCellY++;
-                break;
-            case 2:
-                mainActivity.robotWrap.currentCellX--;
-                break;
-            case 3:
-                mainActivity.robotWrap.currentCellY--;
-                break;
-        }
+        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
         Log.i("TAG", "BluetoothCommands moveForward Stop");
     }
 
     private void turnLeft() {
         Log.i("TAG", "BluetoothCommands turnLeft Start");
         robotMoveControl.turnLeft();
-        if(mainActivity.robotWrap.currentDirection!=0)
-            mainActivity.robotWrap.currentDirection--;
-        else
-            mainActivity.robotWrap.currentDirection = 3;
+        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
         Log.i("TAG", "BluetoothCommands turnLeft Stop");
     }
 
     private void turnRight() {
         Log.i("TAG", "BluetoothCommands turnRight Start");
         robotMoveControl.turnRight();
-        if(mainActivity.robotWrap.currentDirection!=3)
-            mainActivity.robotWrap.currentDirection++;
-        else
-            mainActivity.robotWrap.currentDirection = 0;
+        Log.i("TAG","Robot coords: "+mainActivity.robotWrap.currentCellX+" "+mainActivity.robotWrap.currentCellY+" "+mainActivity.robotWrap.currentDirection);
         Log.i("TAG", "BluetoothCommands turnRight Stop");
     }
 
@@ -88,22 +69,41 @@ public class BluetoothCommands {
         mainActivity.robotWrap.currentCellY = 13;
         mainActivity.robotWrap.currentDirection = 0;
 
+        measureTurn(4,"left");
         moveForward();
-        for (int i = 0; i < 4; i++) {
-            mainActivity.startMeasure();
-            turnRight();
-            Log.i("TAG", "WTF" + Integer.toString(i));
-        }
+        measureTurn(4, "left");
         moveForward();
-        for (int i = 0; i < 4; i++) {
-            mainActivity.startMeasure();
-            turnRight();
-            Log.i("TAG", "WTF" + Integer.toString(i));
-        }
+        measureTurn(3, "left");
+        moveForward();
+
+        measureTurn(3, "left");
+        moveForward();
+        measureTurn(4, "left");
+        moveForward();
+        measureTurn(3, "right");
+        moveForward();
+
+        measureTurn(3,"right");
+        moveForward();
+        measureTurn(4,"left");
+        moveForward();
+        measureTurn(4,"left");
+
         Log.i("TAG", "BluetoothCommands measure Stop");
     }
 
     private void clearFile() throws InterruptedException {
         mainActivity.clearFile();
+    }
+
+    private void measureTurn (int k, String side) {
+        for (int i = 0; i < k; i++) {
+            //mainActivity.startMeasure();
+            if (side.equals("left"))
+                turnLeft();
+            if (side.equals("right"))
+                turnRight();
+            Log.i("TAG", "measureTurn: " + Integer.toString(i));
+        }
     }
 }
