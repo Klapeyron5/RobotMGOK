@@ -636,9 +636,7 @@ public class MainActivity extends Activity {
                             }
                                 try {
                                     Measurement.sleep(500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                } catch (InterruptedException e) {}
                             }
                         for (int j = 0; j < MAC.size(); j++) {
                             averpower.set(j, (averpower.get(j) / i));
@@ -683,7 +681,48 @@ public class MainActivity extends Activity {
                         //FILE
                         Log.i("TAG", "ui_end");
         }
-    };
+    }
+
+    public class MeasurementDistribution extends Thread {
+        @Override
+        public void run() {
+            try {
+                this.sleep(2000);
+            } catch (InterruptedException e) {}
+
+            File fileName = null;
+            FileOutputStream os = null;
+            if (isExternalStorageWritable()) {
+                File sdDir = android.os.Environment.getExternalStorageDirectory();
+                File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
+                dir.mkdir();
+                String[] macInName = mac[3].split(":");
+                fileName = new File(dir, "distribution_Y14_X4_1000_mac"+macInName[0]+"_"+macInName[5]+"_"+"25_04_2016"+".csv");
+                try {
+                    os = new FileOutputStream(fileName, true);
+                    String string = "";
+
+                    for (int i = 0; i < 1000; i++) {
+                        for (int j = 0; j < MAC.size(); j++) {
+                            if (mac[3].equals(MAC.get(j))) {
+                                Log.i("TAG",Integer.toString(power.get(j))+"   "+power.get(j)+"   "+Integer.toString(power.get(j)) + "\n");
+                                string = Integer.toString(power.get(j)) + "\n";
+                                os.write(string.getBytes());
+                            }
+                        }
+                        try {
+                            this.sleep(500);
+                        } catch (InterruptedException e) {}
+                    }
+
+                    os.close();
+
+                    Log.i("TAG","END MEASUREMENT DISTRIBUTION");
+                } catch (Exception e) {}
+            }
+
+        }
+    }
 
     int include(String macBuf) {
         int f = 0;
@@ -698,6 +737,14 @@ public class MainActivity extends Activity {
         measurement.start();
         try {
             measurement.join();
+        } catch (InterruptedException e) {}
+    }
+
+    public void startMeasureDistribution() {
+        MeasurementDistribution measurementDistribution = new MeasurementDistribution();
+        measurementDistribution.start();
+        try {
+            measurementDistribution.join();
         } catch (InterruptedException e) {}
     }
 

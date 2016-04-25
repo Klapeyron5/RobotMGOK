@@ -41,6 +41,11 @@ public class BluetoothCommands {
                     e.printStackTrace();
                 }
                 break;
+            case "mapping measure distribution":
+                Log.i("TAG","mapping measure distribution started");
+                measureDistrubution();
+                Log.i("TAG", "mapping measure distribution finished");
+                break;
         }
     }
 
@@ -91,6 +96,12 @@ public class BluetoothCommands {
 
     private void clearFile() throws InterruptedException {
         mainActivity.clearFile();
+    }
+
+    private void measureDistrubution() {
+        neckUp();
+        mainActivity.startMeasureDistribution();
+        turnRight();
     }
 
     private void handleMappingPath(int[] absPath) {

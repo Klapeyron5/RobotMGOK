@@ -102,7 +102,7 @@ public class RobotMoveControl {
                 //    neckSegment.move();
                 neckController.refreshNeckPosition();
                 try {
-                    sleep(2000);
+                    sleep(3000);
                 } catch (InterruptedException e) {}
             }
         };
