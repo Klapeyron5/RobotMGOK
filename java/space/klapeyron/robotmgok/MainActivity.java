@@ -191,8 +191,6 @@ public class MainActivity extends Activity {
     int Y = 0;
     int measure_counter;
 
-    String lineSeparator = System.getProperty("line.separator");
-
 //////***BLE***(end)
 
 ///////////VARIABLES///////////(end)
@@ -667,12 +665,12 @@ public class MainActivity extends Activity {
                                 int X = robotWrap.currentCellX;
                                 int Y = robotWrap.currentCellY;
                                 int D = robotWrap.currentDirection;
-                                if (measure_counter == 0) data += "Coords," + X + "," + Y + lineSeparator;
-                                data += "dir," + D + ",";
+                                if (measure_counter == 0) data += "coords," + X + "," + Y + "\n";
+                                data +="dir," +  D + ",";
                                 for (i = 0; i < MAC.size(); i++) {
                                     data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
                                 }
-                                data += lineSeparator;
+                                data += "\n";
                                 measure_counter = measure_counter + 1;
                                 if (measure_counter == 4) measure_counter = 0;
                                 os.write(data.getBytes());
