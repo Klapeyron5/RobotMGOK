@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
     ArrayList<Integer> averpower = new ArrayList<>();
     //TextView status;
     //мау-адреса
-    String mac[] = {
+    public String mac[] = {
             "F4:B8:5E:DE:BA:55",
             "F4:B8:5E:DE:CA:B4",
             "F4:B8:5E:DE:CD:F5",
@@ -185,8 +185,6 @@ public class MainActivity extends Activity {
     //coords
 
     String data;
-    String fuckingDataFromFile;
-    String parsedData[][][][] = new String[13][18][mac.length][4];
     int X = 0;
     int Y = 0;
     int measure_counter;
@@ -635,7 +633,7 @@ public class MainActivity extends Activity {
                             for (i = 0; i < 10; i++) {
                                 for (int j = 0; j < MAC.size(); j++) {
                                     averpower.set(j, averpower.get(j) + power.get(j));
-                                }
+                            }
                                 try {
                                     Measurement.sleep(500);
                                 } catch (InterruptedException e) {
@@ -666,7 +664,7 @@ public class MainActivity extends Activity {
                                 int Y = robotWrap.currentCellY;
                                 int D = robotWrap.currentDirection;
                                 if (measure_counter == 0) data += "coords," + X + "," + Y + "\n";
-                                data +="dir," +  D + ",";
+                                data += D + ",";
                                 for (i = 0; i < MAC.size(); i++) {
                                     data += MAC.get(i) + "," + averpower.get(i).toString() + ",";
                                 }
@@ -731,15 +729,6 @@ public class MainActivity extends Activity {
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
             return true;
         }
         return false;
