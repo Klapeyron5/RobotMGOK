@@ -696,15 +696,15 @@ public class MainActivity extends Activity {
                 File sdDir = android.os.Environment.getExternalStorageDirectory();
                 File dir = new File(sdDir.getAbsolutePath() + "/Coords/");
                 dir.mkdir();
-                String[] macInName = mac[3].split(":");
-                fileName = new File(dir, "distribution_Y14_X4_1000_mac"+macInName[0]+"_"+macInName[5]+"_"+"25_04_2016"+".csv");
+                String[] macInName = mac[4].split(":");
+                fileName = new File(dir, "distribution_Y9_X9_1000_mac"+macInName[0]+"_"+macInName[5]+"_"+"25_04_2016"+".csv");
                 try {
                     os = new FileOutputStream(fileName, true);
                     String string = "";
 
                     for (int i = 0; i < 1000; i++) {
                         for (int j = 0; j < MAC.size(); j++) {
-                            if (mac[3].equals(MAC.get(j))) {
+                            if (mac[4].equals(MAC.get(j))) {
                                 Log.i("TAG",Integer.toString(power.get(j))+"   "+power.get(j)+"   "+Integer.toString(power.get(j)) + "\n");
                                 string = Integer.toString(power.get(j)) + "\n";
                                 os.write(string.getBytes());

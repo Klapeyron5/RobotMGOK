@@ -61,8 +61,8 @@ public class DataParser {
 
         for(int i = 0; i < strings.length; i++){
             if (strings[i].split(",")[0] == "coords"){
-                for(int j = 0; j < )
-                parsedData[Integer.parseInt(strings[i].split(",")[1])][Integer.parseInt(strings[i].split(",")[2])][Integer.parseInt(strings[i + 1].split(",")[0])][indexOfArray(strings[i + 1].split(",")[2])] = Integer.parseInt(strings[i + 1].split(",")[3]);
+        //        for(int j = 0; j < )
+        //        parsedData[Integer.parseInt(strings[i].split(",")[1])][Integer.parseInt(strings[i].split(",")[2])][Integer.parseInt(strings[i + 1].split(",")[0])][indexOfArray(strings[i + 1].split(",")[2])] = Integer.parseInt(strings[i + 1].split(",")[3]);
             }
         }
     }
