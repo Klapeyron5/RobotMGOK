@@ -2,15 +2,11 @@ package space.klapeyron.robotmgok.mapping;
 
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-
-import space.klapeyron.robotmgok.MainActivity;
 
 /**
  * Created by Krasavchik Vova on 25.04.2016.
@@ -27,15 +23,22 @@ public class DataParser {
             "F4:B8:5E:DE:CD:DD",
             "F4:B8:5E:DE:D5:E7"};
 
+    //Дисперсионный метод
     public int[] coordinates(int[] power, String[] MAC){
         int coords[] = {0,0,0};
-        int D = 10;
+        int D = 10; //допустимое отклонение
         for(int i = 0; i < parsedData.length; i++){
             for(int j = 0; j < parsedData[0].length; j++){
                 for(int k = 0; k < parsedData[0][0].length; k++){
                     int f = 1;
                     for(int m = 0; m < mac.length; m++){
-                        if(power[m] > (parsedData[i][j][k][m] + D)||(power[m] < (parsedData[i][j][k][m] - D)))
+                        int n;
+                        for(n = 0; n < MAC.length; n++)
+                        {
+                            if (MAC[n].equals(mac[m])) break;
+                        }
+
+                        if(power[n] > (parsedData[i][j][k][m] + D)||(power[n] < (parsedData[i][j][k][m] - D)))
                         {
                             f = 0;
                         }
@@ -51,11 +54,42 @@ public class DataParser {
         return coords;
     }
 
+    /*//метод поиска минимального отклонения
+    public int[] coordinates(int[] power, String[] MAC){
+        int coords[] = {0,0,0};
+        int min[] = {1000,0,0,0}; //[minPower,i,j,k]
+        for(int i = 0; i < parsedData.length; i++){
+            for(int j = 0; j < parsedData[0].length; j++){
+                for(int k = 0; k < parsedData[0][0].length; k++){
+                    int bufmin = 0;
+                    for(int m = 0; m < mac.length; m++){
+                        int n;
+                        for(n = 0; n < MAC.length; n++)
+                        {
+                            if (MAC[n].equals(mac[m])) break;
+                        }
+
+                        bufmin = bufmin + Math.abs(power[n] - parsedData[i][j][k][m]);
+                    }
+                    if (bufmin < min[0]) {
+                        min[0] = bufmin;
+                        min[1] = i;
+                        min[2] = j;
+                        min[3] = k;
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < 3; i++) coords[i] = min[i+1];
+        return coords;
+    }*/
+
     public void parse(){
         String strings[] = FileToString().split("\n");
-
         for(int i = 0; i < strings.length; i++){
-            if (strings[i].split(",")[0] == "coords"){
+            Log.i("TAG", strings[i].split(",")[0]);
+            if (strings[i].split(",")[0].equals("coords")){
+                Log.i("TAG","Coords:" + strings[i].split(",")[1] + "," + strings[i].split(",")[2]);
                 for(int j = 1; j < 5; j++) {
                     for(int k = 0; k < mac.length; k++) {
                         parsedData[Integer.parseInt(strings[i].split(",")[1])][Integer.parseInt(strings[i].split(",")[2])][Integer.parseInt(strings[i + j].split(",")[0])][indexOfArray(strings[i + j].split(",")[2*k+1])] = Integer.parseInt(strings[i + j].split(",")[2*k+2]);

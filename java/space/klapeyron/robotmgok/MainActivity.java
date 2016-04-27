@@ -199,7 +199,7 @@ public class MainActivity extends Activity {
 
 
     private void initConstructor() {
-        coordView = (TextView) findViewById(R.id.buttonCoords);
+        coordView = (TextView) findViewById(R.id.textViewCoords);
         textViewServerState = (TextView) findViewById(R.id.textViewServerState);
         textViewClientConnectionState = (TextView) findViewById(R.id.textViewClientConnectionState);
         textViewRobotConnectionState = (TextView) findViewById(R.id.textViewRobotConnectionState);
@@ -615,10 +615,12 @@ public class MainActivity extends Activity {
                             }
                         }
             }
+
+            if (MAC.size() > 5) getCoords();
         }
     };
 
-    public void getCoords(View v){
+    public void getCoords(){
         int[] powerArray = new int[mac.length];
         String[] macArray = new String[mac.length];
 

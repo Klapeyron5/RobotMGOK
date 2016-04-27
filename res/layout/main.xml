@@ -132,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="(X;Y)"
-                android:id="@+id/textView2"
+                android:id="@+id/textViewCoords"
                 android:layout_column="1" />
 
             <Button
@@ -256,15 +256,6 @@
                 android:id="@+id/buttonStop"
                 android:layout_weight="1"
                 android:layout_gravity="left" />
-
-            <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="find coords"
-                android:id="@+id/buttonCoords"
-                android:onClick="getCoords"/>
 
             <Button
                 style="?android:attr/buttonStyleSmall"
