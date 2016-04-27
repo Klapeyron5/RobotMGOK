@@ -70,7 +70,9 @@ public class BluetoothCommands {
 
         neckUp();
         measureTurn(4,"left");
-        moveForward();
+
+        //Rare shit:
+        /*moveForward();
         measureTurn(4, "left");
         moveForward();
         measureTurn(3, "left");
@@ -87,7 +89,7 @@ public class BluetoothCommands {
         moveForward();
         measureTurn(4,"left");
         moveForward();
-        measureTurn(4,"left");
+        measureTurn(4,"left");*/
     }
 
     private void neckUp() {

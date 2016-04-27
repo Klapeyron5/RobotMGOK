@@ -17,6 +17,8 @@ import space.klapeyron.robotmgok.MainActivity;
  */
 public class DataParser {
 
+    int parsedData[][][][] = new int[13][18][4][6]; //[X][Y][dir][mac] <-> [power]
+
     public String mac[] = {
             "F4:B8:5E:DE:BA:55",
             "F4:B8:5E:DE:CA:B4",
@@ -24,6 +26,45 @@ public class DataParser {
             "F4:B8:5E:DE:9D:0D",
             "F4:B8:5E:DE:CD:DD",
             "F4:B8:5E:DE:D5:E7"};
+
+    public int[] coordinates(int[] power, String[] MAC){
+        int coords[] = {0,0,0};
+        int D = 10;
+        for(int i = 0; i < parsedData.length; i++){
+            for(int j = 0; j < parsedData[0].length; j++){
+                for(int k = 0; k < parsedData[0][0].length; k++){
+                    int f = 1;
+                    for(int m = 0; m < mac.length; m++){
+                        if(power[m] > (parsedData[i][j][k][m] + D)||(power[m] < (parsedData[i][j][k][m] - D)))
+                        {
+                            f = 0;
+                        }
+                    }
+                    if (f == 1) {
+                        coords[0] = i;
+                        coords[1] = j;
+                        coords[2] = k;
+                    }
+                }
+            }
+        }
+        return coords;
+    }
+
+    public void parse(){
+        String strings[] = FileToString().split("\n");
+
+        for(int i = 0; i < strings.length; i++){
+            if (strings[i].split(",")[0] == "coords"){
+                for(int j = 1; j < 5; j++) {
+                    for(int k = 0; k < mac.length; k++) {
+                        parsedData[Integer.parseInt(strings[i].split(",")[1])][Integer.parseInt(strings[i].split(",")[2])][Integer.parseInt(strings[i + j].split(",")[0])][indexOfArray(strings[i + j].split(",")[2*k+1])] = Integer.parseInt(strings[i + j].split(",")[2*k+2]);
+                    }
+                }
+            }
+        }
+        Log.i("TAG","parse()");
+    }
 
     public String FileToString(){
         File fileName = null;
@@ -53,18 +94,6 @@ public class DataParser {
             Log.i("TAG", "SD_not_available");
         }
         return text.toString();
-    }
-
-    public void Parse(){
-        int parsedData[][][][] = new int[13][18][4][6]; //[X][Y][dir][mac] <-> [power]
-        String strings[] = FileToString().split("\n");
-
-        for(int i = 0; i < strings.length; i++){
-            if (strings[i].split(",")[0] == "coords"){
-        //        for(int j = 0; j < )
-        //        parsedData[Integer.parseInt(strings[i].split(",")[1])][Integer.parseInt(strings[i].split(",")[2])][Integer.parseInt(strings[i + 1].split(",")[0])][indexOfArray(strings[i + 1].split(",")[2])] = Integer.parseInt(strings[i + 1].split(",")[3]);
-            }
-        }
     }
 
     public int indexOfArray(String str){

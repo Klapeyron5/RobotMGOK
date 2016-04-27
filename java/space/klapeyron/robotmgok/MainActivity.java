@@ -10,8 +10,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,10 +17,8 @@ import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -35,8 +31,11 @@ import java.util.Set;
 
 import ru.rbot.android.bridge.service.robotcontroll.exceptions.ControllerException;
 import space.klapeyron.robotmgok.mapping.BluetoothCommands;
+import space.klapeyron.robotmgok.mapping.DataParser;
 
 public class MainActivity extends Activity {
+
+    DataParser dataParser = new DataParser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +45,8 @@ public class MainActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         screenHeight = metrics.heightPixels;
         screenWidth = metrics.widthPixels;
+
+        dataParser.parse();
 
         setContentView(R.layout.main);
         initConstructor();
@@ -140,6 +141,7 @@ public class MainActivity extends Activity {
     //customizing server interface
     public int screenWidth;
     public int screenHeight;
+    public TextView coordView;
     private TextView textViewServerState;
     private TextView textViewRobotConnectionState;
     private TextView textViewClientConnectionState;
@@ -185,8 +187,6 @@ public class MainActivity extends Activity {
     //coords
 
     String data;
-    int X = 0;
-    int Y = 0;
     int measure_counter;
 
 //////***BLE***(end)
@@ -199,6 +199,7 @@ public class MainActivity extends Activity {
 
 
     private void initConstructor() {
+        coordView = (TextView) findViewById(R.id.buttonCoords);
         textViewServerState = (TextView) findViewById(R.id.textViewServerState);
         textViewClientConnectionState = (TextView) findViewById(R.id.textViewClientConnectionState);
         textViewRobotConnectionState = (TextView) findViewById(R.id.textViewRobotConnectionState);
@@ -616,6 +617,19 @@ public class MainActivity extends Activity {
             }
         }
     };
+
+    public void getCoords(View v){
+        int[] powerArray = new int[mac.length];
+        String[] macArray = new String[mac.length];
+
+        for(int i = 0; i < mac.length; i++){
+            powerArray[i] = Integer.parseInt(power.get(i).toString());
+            macArray[i] = MAC.get(i).toString();
+        }
+
+        int[] coordinates = dataParser.coordinates(powerArray,macArray);
+        coordView.setText("(" + Integer.toString(coordinates[0]) + ";" + Integer.toString(coordinates[1]) + ")" + "Dir: " + Integer.toString(coordinates[2]));
+    }
 
     public class Measurement extends Thread {
         @Override
