@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
         screenHeight = metrics.heightPixels;
         screenWidth = metrics.widthPixels;
 
-        dataParser.parse();
+    //    dataParser.parse();
 
         setContentView(R.layout.main);
         initConstructor();
