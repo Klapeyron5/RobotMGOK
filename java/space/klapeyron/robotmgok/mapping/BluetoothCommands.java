@@ -117,6 +117,9 @@ public class BluetoothCommands {
 
   /*      measureTurn(4,"left");
         moveForward();
+        measureTurn(4,"left");
+
+        /*moveForward();
         measureTurn(4, "left");
         moveForward();
         measureTurn(3, "left");
