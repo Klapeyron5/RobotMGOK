@@ -30,7 +30,7 @@ public class RobotMoveControl {
         else
             robotWrap.currentDirection = 3;
         robotWrap.currentCustorPosition = 2;
-        Log.i("TAG", "turnLeft Stop");
+        Log.i("TAG", "turnLeft Stop;  Coors: "+robotWrap.currentCellX+" "+robotWrap.currentCellY+" "+robotWrap.currentDirection);
     }
 
     public void turnRight() {
@@ -46,7 +46,7 @@ public class RobotMoveControl {
         else
             robotWrap.currentDirection = 0;
         robotWrap.currentCustorPosition = 1;
-        Log.i("TAG", "turnRight Stop");
+        Log.i("TAG", "turnRight Stop;  Coors: "+robotWrap.currentCellX+" "+robotWrap.currentCellY+" "+robotWrap.currentDirection);
     }
 
     public void moveForward() {
@@ -72,6 +72,7 @@ public class RobotMoveControl {
         }
         robotWrap.currentCustorPosition = 0;
         Log.i("TAG", "forwardStop! angle: " + robotWrap.odometryAngle);
+        Log.i("TAG", "forwardStop! Stop;  Coors: "+robotWrap.currentCellX+" "+robotWrap.currentCellY+" "+robotWrap.currentDirection);
     }
 
     public void neckUp() {
@@ -97,8 +98,8 @@ public class RobotMoveControl {
                 neckSegment = neck.getNeckSegment(2);
                 neckSegment.setFlag((byte) 0x02);
                 neckSegment.setSpeed(5);
-                neckSegment.setAngle(0.44f);
-
+                neckSegment.setAngle(0.47f); //0.44f - вертикально без нагрузки
+                
                 //    neckSegment.move();
                 neckController.refreshNeckPosition();
                 try {
@@ -248,14 +249,14 @@ public class RobotMoveControl {
 
             if (absAngleDifference < rangeValidDeviation) {
                 wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                Log.i("TAG","OK  ; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+        //        Log.i("TAG","OK  ; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
             } else
                 if (angleDifference > 0) { //отклонение вправо, корректируем влево
                     wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                    Log.i("TAG","LEFT; start angle: " + startAngle + ";  angle: " + robotWrap.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+       //             Log.i("TAG","LEFT; start angle: " + startAngle + ";  angle: " + robotWrap.odometryAngle + ";  difference:"+absAngleDifference+";  sign: "+angleDifference);
                 } else { //отклонение влево, корректируем вправо
                     wheelsController.setWheelsSpeeds(standardSpeed, standardSpeed);
-                    Log.i("TAG","RIGH; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
+         //           Log.i("TAG","RIGH; start angle: "+startAngle+";  angle: "+ robotWrap.odometryAngle+";  difference:"+absAngleDifference+";  sign: "+angleDifference);
                 }
         }
 

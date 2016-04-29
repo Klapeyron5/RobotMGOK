@@ -151,6 +151,8 @@ public class MainActivity extends Activity {
     public EditText editTextDirection;
 
     //////***BLE***
+    public String dateMapping;
+
     ArrayList<String> beacons = new ArrayList<String>();
     ArrayList<String> average = new ArrayList<>();
  //   ArrayAdapter<String> adapter;
@@ -669,6 +671,7 @@ public class MainActivity extends Activity {
                                 data += "\n";
                                 measure_counter = measure_counter + 1;
                                 if (measure_counter == 4) measure_counter = 0;
+                                dateMapping += data;
                                 os.write(data.getBytes());
                                 os.close();
                             } catch (Exception e) {
